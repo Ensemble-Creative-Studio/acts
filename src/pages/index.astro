@@ -1,94 +1,23 @@
 ---
 import HomepageIntroSlide from "../components/homepage/HomepageIntroSlide.astro";
 import HomepageProjectSlide from "../components/homepage/HomepageProjectSlide.astro";
+import HeroSlide from "../components/homepage/HeroSlide.astro";
+import FooterSlide from "../components/homepage/FooterSlide.astro";
 import type {
-  HomepageData,
   PresentationSlide,
   Project,
 } from "../components/homepage/types";
 import Layout from "../layouts/Layout.astro";
-import { loadQuery } from "../sanity/lib/load-query";
+import { getHomepage } from "../sanity/lib/sanity-utils";
 
-const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
-  galleries[]{
-    _key,
-    slides[]{
-      ...,
-      _type == "reference" => @->{
-        _id,
-        _type,
-        name,
-        color,
-        credits[]{
-          _key,
-          jobs,
-          name
-        },
-        mainMedia{
-          mediaType,
-          caption,
-          image{
-            asset,
-            alt
-          },
-          video{
-            asset->{
-              playbackId
-            }
-          }
-        },
-        gallery[]{
-          ...,
-          image{
-            asset,
-            alt
-          },
-          leftMedia{
-            mediaType,
-            caption,
-            image{
-              asset,
-              alt
-            },
-            video{
-              asset->{
-                playbackId
-              }
-            }
-          },
-          rightMedia{
-            mediaType,
-            caption,
-            image{
-              asset,
-              alt
-            },
-            video{
-              asset->{
-                playbackId
-              }
-            }
-          },
-          video{
-            asset->{
-              playbackId
-            }
-          }
-        }
-      }
-    }
-  }
-}`;
-
-const { data: homepage } = await loadQuery<HomepageData>({
-  query: homepageQuery,
-});
+const homepage = await getHomepage();
 
 const galleries = (homepage?.galleries ?? []).slice(0, 2);
 ---
 
 <Layout>
   <main class="bg-stone-100 text-neutral-950">
+    <HeroSlide />
     {galleries.length ? (
       galleries.map((gallery, galleryIndex) => {
         return (
@@ -112,6 +41,7 @@ const galleries = (homepage?.galleries ?? []).slice(0, 2);
         </div>
       </section>
     )}
+    <FooterSlide />
   </main>
 </Layout>
 
