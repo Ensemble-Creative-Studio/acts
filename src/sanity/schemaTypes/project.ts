@@ -273,11 +273,20 @@ export const projectType = defineType({
       validation: (Rule) => Rule.required().min(2),
     }),
     defineField({
+      name: "color",
+      title: "Color",
+      type: "colorInput",
+      group: "content",
+      description: "Color used for the project.",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "credits",
       title: "Credits",
       type: "array",
       group: "content",
-      description: "Add as many credits as needed. Each entry contains a job and a name.",
+      description:
+        "Add as many credits as needed. Each entry contains a job and a name.",
       of: [defineArrayMember({ type: "projectCredit" })],
     }),
     defineField({
@@ -285,7 +294,8 @@ export const projectType = defineType({
       title: "Main media",
       type: "projectSelectableMedia",
       group: "hero",
-      description: "Primary media for the project hero. Choose either an image or a Mux video.",
+      description:
+        "Primary media for the project hero. Choose either an image or a Mux video.",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -321,7 +331,8 @@ export const projectType = defineType({
     prepare({ title, media, mediaType }) {
       return {
         title,
-        subtitle: mediaType === "video" ? "Main media: video" : "Main media: image",
+        subtitle:
+          mediaType === "video" ? "Main media: video" : "Main media: image",
         media,
       };
     },
