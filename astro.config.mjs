@@ -2,11 +2,20 @@
 import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
 import react from "@astrojs/react";
+import tailwindcss from "@tailwindcss/vite";
 
 import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
+  image: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
+    ],
+  },
   integrations: [
     sanity({
       projectId: "h1krgjqa",
@@ -17,6 +26,8 @@ export default defineConfig({
     }),
     react(),
   ],
-
+  vite: {
+    plugins: [tailwindcss()],
+  },
   adapter: vercel(),
 });

@@ -1,0 +1,271 @@
+---
+import { Image } from "astro:assets";
+import type { Project, ProjectCredit, ImageAsset } from "./types";
+
+type Props = {
+  slide: Project;
+};
+
+const { slide } = Astro.props;
+
+const formatCredit = (credit: ProjectCredit) =>
+  [credit.jobs, credit.name].filter(Boolean).join(" ");
+
+const getImageData = (image?: ImageAsset) => ({
+  src: image?.asset?.url,
+  width: image?.asset?.metadata?.dimensions?.width ?? 1600,
+  height: image?.asset?.metadata?.dimensions?.height ?? 2000,
+});
+
+const getMuxPlaybackUrl = (playbackId?: string) =>
+  playbackId ? `https://stream.mux.com/${playbackId}.m3u8` : undefined;
+
+const mainImage =
+  slide.mainMedia?.mediaType === "image" ? getImageData(slide.mainMedia.image) : undefined;
+const credits = (slide.credits ?? []).map(formatCredit).filter(Boolean);
+const galleryItems = slide.gallery ?? [];
+const maxState = galleryItems.length + 1;
+const projectBackground = slide.color || "#f5e9e6";
+const mediaCount = galleryItems.length + 1;
+const initialMediaCount = `1/${mediaCount}`;
+---
+
+<article
+  class="group sticky top-0 h-dvh cursor-pointer overflow-hidden"
+  data-project-card
+  data-state="0"
+  data-max-state={maxState}
+  tabindex="0"
+  role="button"
+  aria-label={`Reveal ${slide.name || "project"} gallery`}
+  style={`background-color: ${projectBackground};`}
+>
+  <div class="relative flex h-full items-center justify-center">
+    <div
+      class="relative z-0 flex w-full max-w-7xl items-center justify-center px-5 py-8 transition-opacity duration-300 ease-out group-data-[state=0]:opacity-100 group-data-[state=1]:opacity-100 group-data-[state=2]:opacity-0 group-data-[state=3]:opacity-0 group-data-[state=4]:opacity-0 group-data-[state=5]:opacity-0 sm:px-8 md:px-12"
+      data-main-media
+    >
+      <div class="relative aspect-4/5 w-[min(38vw,33rem)] min-w-[16rem] overflow-hidden sm:w-[min(36vw,36rem)]">
+        {mainImage?.src ? (
+          <Image
+            src={mainImage.src}
+            alt={slide.mainMedia?.image?.alt || slide.name || "Project image"}
+            class="size-full object-contain"
+            width={mainImage.width}
+            height={mainImage.height}
+            loading="lazy"
+          />
+        ) : (
+          <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-600">
+            Image manquante
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div class="pointer-events-none absolute inset-0 z-10">
+      {galleryItems.map((item, itemIndex) => {
+        const stateIndex = itemIndex + 2;
+        const stateValue = String(stateIndex);
+
+        if (item._type === "projectGalleryFullImageRow") {
+          const image = getImageData(item.image);
+
+          return (
+            <div
+              class="absolute inset-0 flex items-center justify-center px-5 py-8 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 sm:px-8 md:px-12"
+              data-gallery-state={stateValue}
+              data-visible="false"
+            >
+              <div class="flex h-full w-full items-center justify-center">
+                <div class="relative flex h-full w-full items-center justify-center overflow-hidden">
+                  {image.src ? (
+                    <Image
+                      src={image.src}
+                      alt={item.image?.alt || slide.name || "Gallery image"}
+                      class="size-full object-contain"
+                      width={image.width}
+                      height={image.height}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
+                      Image manquante
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        if (item._type === "projectGalleryFullVideoRow") {
+          const playbackUrl = getMuxPlaybackUrl(item.video?.asset?.playbackId);
+
+          return (
+            <div
+              class="absolute inset-0 flex items-center justify-center px-5 py-8 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 sm:px-8 md:px-12"
+              data-gallery-state={stateValue}
+              data-visible="false"
+            >
+              <div class="flex h-full w-full items-center justify-center bg-neutral-900">
+                {playbackUrl ? (
+                  <video
+                    class="size-full object-contain"
+                    src={playbackUrl}
+                    playsinline
+                    muted
+                    autoplay
+                    loop
+                  />
+                ) : (
+                  <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-300">
+                    Video indisponible
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        const leftMedia = item.leftMedia;
+        const rightMedia = item.rightMedia;
+        const leftIsLarge = item._type === "projectGallerySplitLeft";
+        const leftImage =
+          leftMedia?.mediaType === "image" ? getImageData(leftMedia.image) : undefined;
+        const rightImage =
+          rightMedia?.mediaType === "image" ? getImageData(rightMedia.image) : undefined;
+
+        return (
+          <div
+            class="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100"
+            data-gallery-state={stateValue}
+            data-visible="false"
+          >
+            <div
+              class="flex h-full w-full flex-col md:flex-row"
+              style={`background-color: ${projectBackground};`}
+            >
+              <div
+                class={`relative h-[52dvh] w-full overflow-hidden md:h-full ${
+                  leftIsLarge ? "md:basis-[55%]" : "md:basis-[45%]"
+                }`}
+              >
+                {leftIsLarge ? (
+                  leftImage?.src ? (
+                    <Image
+                      src={leftImage.src}
+                      alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
+                      class="size-full object-contain"
+                      width={leftImage.width}
+                      height={leftImage.height}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
+                      {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                    </div>
+                  )
+                ) : (
+                  <div class="flex h-full w-full items-center justify-start" style={`background-color: ${projectBackground};`}>
+                    <div class="relative aspect-4/5 h-[72dvh] w-auto overflow-hidden md:mr-auto">
+                      {leftImage?.src ? (
+                        <Image
+                          src={leftImage.src}
+                          alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
+                          class="size-full object-contain"
+                          width={leftImage.width}
+                          height={leftImage.height}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
+                          {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div
+                class={`flex w-full items-center px-0 py-5 md:h-full md:px-0 md:py-0 ${
+                  leftIsLarge ? "md:basis-[45%] md:justify-end" : "md:basis-[55%] md:justify-start"
+                }`}
+                style={`background-color: ${projectBackground};`}
+              >
+                <div
+                  class={`relative w-full overflow-hidden ${
+                    leftIsLarge ? "aspect-4/5 md:ml-auto md:h-[72dvh] md:w-auto" : "h-[52dvh] md:h-full"
+                  }`}
+                >
+                  {leftIsLarge ? (
+                    rightImage?.src ? (
+                      <Image
+                        src={rightImage.src}
+                        alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
+                        class="size-full object-contain"
+                        width={rightImage.width}
+                        height={rightImage.height}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-600">
+                        {rightMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                      </div>
+                    )
+                  ) : rightImage?.src ? (
+                    <Image
+                      src={rightImage.src}
+                      alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
+                      class="size-full object-contain"
+                      width={rightImage.width}
+                      height={rightImage.height}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-600">
+                      {rightMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <div
+      class="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4 transition-opacity duration-300 ease-out group-data-[state=0]:opacity-100 group-data-[state=1]:opacity-0 group-data-[state=2]:opacity-0 group-data-[state=3]:opacity-0 group-data-[state=4]:opacity-0 group-data-[state=5]:opacity-0"
+      data-project-title
+      style="mix-blend-mode: difference;"
+    >
+      <h2 class="text-balance text-center text-[clamp(3.5rem,15vw,9rem)] font-semibold uppercase leading-none text-white">
+        {slide.name || "Untitled Project"}
+      </h2>
+    </div>
+
+    <div class="pointer-events-none absolute bottom-5 left-5 z-20 flex flex-row gap-x-3 sm:bottom-6 sm:left-6 font-semibold text-neutral-950">
+      <p class="text-2xl uppercase">{slide.name}</p>
+      {slide.credits?.length ? (
+        <div class="flex items-baseline gap-x-3">
+          {slide.credits.map((credit) => (
+            <p>
+              <span class="text-base">{credit.jobs}</span>
+              <span class="text-2xl uppercase ">{credit.name}</span>
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p class="text-base font-semibold uppercase leading-none text-neutral-950">
+          {slide.mainMedia?.mediaType === "video" ? "Video project" : slide.name || "Project"}
+        </p>
+      )}
+    </div>
+
+    <div class="pointer-events-none absolute right-5 top-1/2 z-20 -translate-y-1/2 text-sm text-neutral-950 sm:right-10 sm:text-base">
+      <p class="tabular-nums" data-media-counter>{initialMediaCount}</p>
+    </div>
+  </div>
+</article>

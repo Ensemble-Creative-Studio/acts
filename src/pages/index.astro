@@ -1,24 +1,165 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-import { loadQuery } from '../sanity/lib/load-query';
+import HomepageIntroSlide from "../components/homepage/HomepageIntroSlide.astro";
+import HomepageProjectSlide from "../components/homepage/HomepageProjectSlide.astro";
+import type {
+  HomepageData,
+  PresentationSlide,
+  Project,
+} from "../components/homepage/types";
+import Layout from "../layouts/Layout.astro";
+import { loadQuery } from "../sanity/lib/load-query";
 
-async function getPosts() {
-  const { data } = await loadQuery({
-    query: `*[_type == "post"] {
-      _id,
-      title,
-      slug,
-      mainImage,
-    }`,
-  });
-  return data;
-}
+const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
+  galleries[]{
+    _key,
+    slides[]{
+      ...,
+      _type == "reference" => @->{
+        _id,
+        _type,
+        name,
+        color,
+        credits[]{
+          _key,
+          jobs,
+          name
+        },
+        mainMedia{
+          mediaType,
+          caption,
+          image{
+            asset,
+            alt
+          },
+          video{
+            asset->{
+              playbackId
+            }
+          }
+        },
+        gallery[]{
+          ...,
+          image{
+            asset,
+            alt
+          },
+          leftMedia{
+            mediaType,
+            caption,
+            image{
+              asset,
+              alt
+            },
+            video{
+              asset->{
+                playbackId
+              }
+            }
+          },
+          rightMedia{
+            mediaType,
+            caption,
+            image{
+              asset,
+              alt
+            },
+            video{
+              asset->{
+                playbackId
+              }
+            }
+          },
+          video{
+            asset->{
+              playbackId
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
 
-const posts = await getPosts();
+const { data: homepage } = await loadQuery<HomepageData>({
+  query: homepageQuery,
+});
 
+const galleries = (homepage?.galleries ?? []).slice(0, 2);
 ---
 
 <Layout>
-  <pre>{JSON.stringify(posts, null, 2)}</pre>
+  <main class="bg-stone-100 text-neutral-950">
+    {galleries.length ? (
+      galleries.map((gallery, galleryIndex) => {
+        return (
+          <section aria-label={`Gallery ${galleryIndex + 1}`} class="contents">
+            {gallery.slides.map((slide) =>
+              slide._type === "homepageGalleryPresentationSlide" ? (
+                <HomepageIntroSlide slide={slide as PresentationSlide} />
+              ) : (
+                <HomepageProjectSlide slide={slide as Project} />
+              ),
+            )}
+          </section>
+        );
+      })
+    ) : (
+      <section class="flex min-h-dvh items-center justify-center bg-stone-100 px-6">
+        <div class="max-w-md text-center">
+          <p class="text-pretty text-base text-neutral-600">
+            Ajoutez deux galleries dans Sanity pour remplir la homepage.
+          </p>
+        </div>
+      </section>
+    )}
+  </main>
 </Layout>
+
+<script>
+  const updateProjectCard = (card) => {
+    const state = Number(card.dataset.state || "0");
+    const galleryStates = Array.from(card.querySelectorAll("[data-gallery-state]"));
+    const progress = card.querySelector("[data-gallery-progress]");
+    const mediaCounter = card.querySelector("[data-media-counter]");
+
+    galleryStates.forEach((panel) => {
+      panel.dataset.visible = panel.dataset.galleryState === String(state) ? "true" : "false";
+    });
+
+    if (mediaCounter) {
+      const mediaTotal = galleryStates.length + 1;
+      const mediaIndex = Math.min(Math.max(state, 1), mediaTotal);
+      mediaCounter.textContent = `${mediaIndex}/${mediaTotal}`;
+    }
+
+    if (progress) {
+      const galleryIndex = Math.max(state - 1, 1);
+      const galleryTotal = Math.max(galleryStates.length, 1);
+      progress.textContent =
+        state >= 2 ? `Gallery ${Math.min(galleryIndex, galleryTotal)}/${galleryTotal}` : "Click to reveal";
+    }
+  };
+
+  const advanceProjectCard = (card) => {
+    const currentState = Number(card.dataset.state || "0");
+    const maxState = Number(card.dataset.maxState || "1");
+    const nextState = Math.min(currentState + 1, maxState);
+    card.dataset.state = String(nextState);
+    updateProjectCard(card);
+  };
+
+  document.querySelectorAll("[data-project-card]").forEach((card) => {
+    updateProjectCard(card);
+
+    card.addEventListener("click", () => {
+      advanceProjectCard(card);
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        advanceProjectCard(card);
+      }
+    });
+  });
+</script>

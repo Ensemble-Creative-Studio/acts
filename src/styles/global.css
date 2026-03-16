@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* ITC Avant Garde Std - @font-face */
+@font-face {
+  font-family: "Avant Garde Bold";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Avant Garde Bold Condensed";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-bold-condensed.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Avant Garde Light Italic";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-light-italic.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Avant Garde Medium Italic";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-medium-italic.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Avant Garde Semibold Condensed";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-semibold-condensed.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Avant Garde Semibold Italic";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-semibold-italic.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Avant Garde Semibold Condensed Italic";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/ITCAvantGardeStd-semibold-condesend-italic.otf")
+    format("opentype");
+}
+
+/* Classes Tailwind pour les polices Avant Garde + tailles personnalisées */
+@theme {
+  --text-10xl: 9.375rem;
+  --text-10xl--line-height: 1;
+
+  --font-avant-garde-bold: "Avant Garde Bold", sans-serif;
+  --font-avant-garde-bold-condensed: "Avant Garde Bold Condensed", sans-serif;
+  --font-avant-garde-light-italic: "Avant Garde Light Italic", sans-serif;
+  --font-avant-garde-medium-italic: "Avant Garde Medium Italic", sans-serif;
+  --font-avant-garde-semibold-condensed:
+    "Avant Garde Semibold Condensed", sans-serif;
+  --font-avant-garde-semibold-italic: "Avant Garde Semibold Italic", sans-serif;
+  --font-avant-garde-semibold-condensed-italic:
+    "Avant Garde Semibold Condensed Italic", sans-serif;
+}
