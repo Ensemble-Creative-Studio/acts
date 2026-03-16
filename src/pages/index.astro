@@ -1,11 +1,24 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { loadQuery } from '../sanity/lib/load-query';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+async function getPosts() {
+  const { data } = await loadQuery({
+    query: `*[_type == "post"] {
+      _id,
+      title,
+      slug,
+      mainImage,
+    }`,
+  });
+  return data;
+}
+
+const posts = await getPosts();
+
 ---
 
 <Layout>
-	<Welcome />
+  <pre>{JSON.stringify(posts, null, 2)}</pre>
 </Layout>
