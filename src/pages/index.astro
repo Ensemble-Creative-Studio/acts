@@ -16,7 +16,7 @@ const galleries = (homepage?.galleries ?? []).slice(0, 2);
 ---
 
 <Layout>
-  <main class="bg-stone-100 text-neutral-950">
+  <main class="h-dvh overflow-y-auto snap-y snap-mandatory bg-stone-100 text-neutral-950">
     <HeroSlide />
     {galleries.length ? (
       galleries.map((gallery, galleryIndex) => {
@@ -33,7 +33,7 @@ const galleries = (homepage?.galleries ?? []).slice(0, 2);
         );
       })
     ) : (
-      <section class="flex min-h-dvh items-center justify-center bg-stone-100 px-6">
+      <section class="flex min-h-dvh snap-start items-center justify-center bg-stone-100 px-6">
         <div class="max-w-md text-center">
           <p class="text-pretty text-base text-neutral-600">
             Ajoutez deux galleries dans Sanity pour remplir la homepage.

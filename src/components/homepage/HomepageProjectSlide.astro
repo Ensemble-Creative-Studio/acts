@@ -31,7 +31,7 @@ const initialMediaCount = `1/${mediaCount}`;
 ---
 
 <article
-  class="group sticky top-0 h-dvh cursor-pointer overflow-hidden"
+  class="group h-dvh snap-start cursor-pointer overflow-hidden"
   data-project-card
   data-state="0"
   data-max-state={maxState}
@@ -147,33 +147,38 @@ const initialMediaCount = `1/${mediaCount}`;
               style={`background-color: ${projectBackground};`}
             >
               <div
-                class={`relative h-[52dvh] w-full overflow-hidden md:h-full ${
-                  leftIsLarge ? "md:basis-[55%]" : "md:basis-[45%]"
+                class={`relative h-[50dvh] w-full overflow-hidden md:h-full ${
+                  leftIsLarge ? "md:basis-[60%]" : "md:basis-[40%]"
                 }`}
               >
                 {leftIsLarge ? (
-                  leftImage?.src ? (
-                    <Image
-                      src={leftImage.src}
-                      alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
-                      class="size-full object-contain"
-                      width={leftImage.width}
-                      height={leftImage.height}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
-                      {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
-                    </div>
-                  )
+                  <div class="flex h-full w-full items-center justify-start">
+                    {leftImage?.src ? (
+                      <Image
+                        src={leftImage.src}
+                        alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
+                        class="h-full w-auto object-contain object-left"
+                        width={leftImage.width}
+                        height={leftImage.height}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
+                        {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                      </div>
+                    )}
+                  </div>
                 ) : (
-                  <div class="flex h-full w-full items-center justify-start" style={`background-color: ${projectBackground};`}>
-                    <div class="relative aspect-4/5 h-[72dvh] w-auto overflow-hidden md:mr-auto">
+                  <div
+                    class="flex h-full w-full items-center justify-start"
+                    style={`background-color: ${projectBackground};`}
+                  >
+                    <div class="relative h-full w-auto overflow-hidden md:mr-auto md:max-h-[60dvh]">
                       {leftImage?.src ? (
                         <Image
                           src={leftImage.src}
                           alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
-                          class="size-full object-contain"
+                          class="h-full w-auto object-contain object-left"
                           width={leftImage.width}
                           height={leftImage.height}
                           loading="lazy"
@@ -189,14 +194,18 @@ const initialMediaCount = `1/${mediaCount}`;
               </div>
 
               <div
-                class={`flex w-full items-center px-0 py-5 md:h-full md:px-0 md:py-0 ${
-                  leftIsLarge ? "md:basis-[45%] md:justify-end" : "md:basis-[55%] md:justify-start"
+                class={`flex w-full items-center px-0 py-0 md:h-full md:px-0 md:py-0 ${
+                  leftIsLarge
+                    ? "md:basis-[40%] md:justify-end"
+                    : "md:basis-[60%] md:justify-end"
                 }`}
                 style={`background-color: ${projectBackground};`}
               >
                 <div
-                  class={`relative w-full overflow-hidden ${
-                    leftIsLarge ? "aspect-4/5 md:ml-auto md:h-[72dvh] md:w-auto" : "h-[52dvh] md:h-full"
+                  class={`relative overflow-hidden ${
+                    leftIsLarge
+                      ? "h-[50dvh] w-full md:ml-auto md:max-h-[60dvh] md:w-auto"
+                      : "h-[50dvh] w-full md:h-full md:w-auto"
                   }`}
                 >
                   {leftIsLarge ? (
@@ -204,7 +213,7 @@ const initialMediaCount = `1/${mediaCount}`;
                       <Image
                         src={rightImage.src}
                         alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
-                        class="size-full object-contain"
+                        class="h-full w-auto object-contain object-right"
                         width={rightImage.width}
                         height={rightImage.height}
                         loading="lazy"
@@ -218,7 +227,7 @@ const initialMediaCount = `1/${mediaCount}`;
                     <Image
                       src={rightImage.src}
                       alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
-                      class="size-full object-contain"
+                      class="h-full w-auto object-contain object-right"
                       width={rightImage.width}
                       height={rightImage.height}
                       loading="lazy"
@@ -246,7 +255,10 @@ const initialMediaCount = `1/${mediaCount}`;
       </h2>
     </div>
 
-    <div class="pointer-events-none absolute bottom-5 left-5 z-20 flex flex-row gap-x-3 sm:bottom-6 sm:left-6 uppercase font-avant-garde font-medium text-neutral-950">
+    <div
+      class="pointer-events-none absolute bottom-5 left-5 z-20 flex flex-row gap-x-3 uppercase font-avant-garde font-medium text-white sm:bottom-6 sm:left-6"
+      style="mix-blend-mode: difference;"
+    >
       <p class="text-2xl ">{slide.name}</p>
       {slide.credits?.length ? (
         <div class="flex items-baseline gap-x-3">
@@ -258,7 +270,7 @@ const initialMediaCount = `1/${mediaCount}`;
           ))}
         </div>
       ) : (
-        <p class="text-base font-semibold uppercase leading-none text-neutral-950">
+        <p class="text-base font-semibold uppercase leading-none text-white">
           {slide.mainMedia?.mediaType === "video" ? "Video project" : slide.name || "Project"}
         </p>
       )}
