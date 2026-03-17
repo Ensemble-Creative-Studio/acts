@@ -8,15 +8,17 @@ type Props = {
 const { slide } = Astro.props;
 ---
 
-<article class="flex h-dvh snap-start items-center justify-center bg-neutral-800 px-6 py-12">
-  <div class="mx-auto max-w-5xl text-center">
-    <h2 class="text-balance text-6xl font-semibold uppercase leading-none text-stone-200 md:text-10xl font-avant-garde">
-      {slide.title || "Featured Work"}
-    </h2>
-    {slide.subtitle ? (
-      <p class="mx-auto mt-6 max-w-2xl text-pretty text-sm font-medium uppercase text-stone-400 sm:text-base font-avant-garde">
-        {slide.subtitle}
-      </p>
-    ) : null}
-  </div>
-</article>
+<section class="slide-shell snap-start">
+  <article class="slide-panel flex items-center justify-center bg-neutral-800 px-6 py-12">
+    <div class="mx-auto max-w-5xl text-center">
+      <h2 class="text-balance text-6xl font-semibold uppercase leading-none text-stone-200 md:text-7xl font-avant-garde">
+        {slide.title || "Featured Work"}
+      </h2>
+      {slide.subtitle ? (
+        <p class="mx-auto mt-6 max-w-2xl text-pretty text-sm font-medium uppercase text-stone-400 sm:text-base font-avant-garde">
+          {slide.subtitle}
+        </p>
+      ) : null}
+    </div>
+  </article>
+</section>

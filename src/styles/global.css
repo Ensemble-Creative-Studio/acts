@@ -7,3 +7,19 @@
 
   --font-avant-garde: itc-avant-garde-gothic-pro, sans-serif;
 }
+
+.slide-shell {
+  position: relative;
+  height: 200dvh;
+  margin-bottom: -100dvh;
+}
+
+.slide-shell:last-child {
+  margin-bottom: 0;
+}
+
+.slide-panel {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+}

@@ -13,25 +13,20 @@ import { getHomepage } from "../sanity/lib/sanity-utils";
 const homepage = await getHomepage();
 
 const galleries = (homepage?.galleries ?? []).slice(0, 2);
+const slides = galleries.flatMap((gallery) => gallery.slides);
 ---
 
 <Layout>
-  <main class="h-dvh overflow-y-auto snap-y snap-mandatory bg-stone-100 text-neutral-950">
+  <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory bg-stone-100 text-neutral-950">
     <HeroSlide />
-    {galleries.length ? (
-      galleries.map((gallery, galleryIndex) => {
-        return (
-          <section aria-label={`Gallery ${galleryIndex + 1}`} class="contents">
-            {gallery.slides.map((slide) =>
-              slide._type === "homepageGalleryPresentationSlide" ? (
-                <HomepageIntroSlide slide={slide as PresentationSlide} />
-              ) : (
-                <HomepageProjectSlide slide={slide as Project} />
-              ),
-            )}
-          </section>
-        );
-      })
+    {slides.length ? (
+      slides.map((slide) =>
+        slide._type === "homepageGalleryPresentationSlide" ? (
+          <HomepageIntroSlide slide={slide as PresentationSlide} />
+        ) : (
+          <HomepageProjectSlide slide={slide as Project} />
+        ),
+      )
     ) : (
       <section class="flex min-h-dvh snap-start items-center justify-center bg-stone-100 px-6">
         <div class="max-w-md text-center">
