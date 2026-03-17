@@ -241,19 +241,19 @@ const initialMediaCount = `1/${mediaCount}`;
       data-project-title
       style="mix-blend-mode: difference;"
     >
-      <h2 class="text-balance text-center text-[clamp(3.5rem,15vw,9rem)] font-semibold uppercase leading-none text-white">
+      <h2 class="text-balance font-avant-garde text-center text-[clamp(3.5rem,15vw,9rem)] font-semibold uppercase leading-none text-white">
         {slide.name || "Untitled Project"}
       </h2>
     </div>
 
-    <div class="pointer-events-none absolute bottom-5 left-5 z-20 flex flex-row gap-x-3 sm:bottom-6 sm:left-6 font-semibold text-neutral-950">
-      <p class="text-2xl uppercase">{slide.name}</p>
+    <div class="pointer-events-none absolute bottom-5 left-5 z-20 flex flex-row gap-x-3 sm:bottom-6 sm:left-6 uppercase font-avant-garde font-medium text-neutral-950">
+      <p class="text-2xl ">{slide.name}</p>
       {slide.credits?.length ? (
         <div class="flex items-baseline gap-x-3">
           {slide.credits.map((credit) => (
             <p>
               <span class="text-base">{credit.jobs}</span>
-              <span class="text-2xl uppercase ">{credit.name}</span>
+              <span class="text-2xl">{credit.name}</span>
             </p>
           ))}
         </div>
