@@ -257,28 +257,28 @@ const initialMediaCount = `1/${mediaCount}`;
     </div>
 
     <div
-      class="pointer-events-none absolute bottom-5 left-5 z-20 flex flex-row gap-x-3 uppercase font-avant-garde font-medium text-white sm:bottom-6 sm:left-6"
+      class="pointer-events-none absolute inset-x-5 bottom-5 z-20 flex items-center justify-between gap-x-6 uppercase font-avant-garde font-medium text-white sm:inset-x-6 sm:bottom-6"
       style="mix-blend-mode: difference;"
     >
-      <p class="text-2xl ">{slide.name}</p>
-      {slide.credits?.length ? (
-        <div class="flex items-baseline gap-x-3">
-          {slide.credits.map((credit) => (
-            <p>
-              <span class="text-base">{credit.jobs}</span>
-              <span class="text-2xl">{credit.name}</span>
-            </p>
-          ))}
-        </div>
-      ) : (
-        <p class="text-base font-semibold uppercase leading-none text-white">
-          {slide.mainMedia?.mediaType === "video" ? "Video project" : slide.name || "Project"}
-        </p>
-      )}
-    </div>
+      <div class="flex min-w-0 flex-row flex-wrap gap-x-3">
+        <p class="text-2xl">{slide.name}</p>
+        {slide.credits?.length ? (
+          <div class="flex min-w-0 flex-wrap items-baseline gap-x-3">
+            {slide.credits.map((credit) => (
+              <p>
+                <span class="text-base">{credit.jobs}</span>
+                <span class="text-2xl">{credit.name}</span>
+              </p>
+            ))}
+          </div>
+        ) : (
+          <p class="text-base font-semibold uppercase leading-none text-white">
+            {slide.mainMedia?.mediaType === "video" ? "Video project" : slide.name || "Project"}
+          </p>
+        )}
+      </div>
 
-    <div class="pointer-events-none absolute right-5 top-1/2 z-20 -translate-y-1/2 text-sm text-neutral-950 sm:right-10 sm:text-base">
-      <p class="tabular-nums" data-media-counter>{initialMediaCount}</p>
+      <p class="shrink-0 text-sm tabular-nums sm:text-base" data-media-counter>{initialMediaCount}</p>
     </div>
     </div>
   </article>
