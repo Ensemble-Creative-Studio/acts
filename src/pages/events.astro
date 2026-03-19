@@ -1,7 +1,6 @@
 ---
 import HomepageIntroSlide from "../components/homepage/HomepageIntroSlide.astro";
 import HomepageProjectSlide from "../components/homepage/HomepageProjectSlide.astro";
-import HeroSlide from "../components/homepage/HeroSlide.astro";
 import FooterSlide from "../components/homepage/FooterSlide.astro";
 import PortableText from "../components/PortableText.astro";
 import type {
@@ -9,29 +8,27 @@ import type {
   Project,
 } from "../components/homepage/types";
 import Layout from "../layouts/Layout.astro";
-import { getHomepage } from "../sanity/lib/sanity-utils";
+import { getEvents } from "../sanity/lib/sanity-utils";
 
-const homepage = await getHomepage();
+const eventsData = await getEvents();
 
-const galleries = (homepage?.galleries ?? []).slice(0, 2);
-const slides = galleries.flatMap((gallery) => gallery.slides);
+const galleries = (eventsData?.galleries ?? []).slice(0, 2);
+const slides = galleries.flatMap((gallery: any) => gallery.slides);
 ---
 
-<Layout>
+<Layout title="Events">
   <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory bg-stone-100 text-neutral-950">
-    <HeroSlide />
-    
     <section class="slide-shell snap-start">
-      <div class="slide-panel grid grid-cols-12 items-center bg-[#EDDDD9] px-6">
-        <div class="col-span-12 md:col-span-9 portable-text font-avant-garde text-3xl md:text-6xl text-black font-medium tracking-[-1.2px]">
-          {homepage?.description && <PortableText portableText={homepage.description} />}
+      <div class="grid grid-cols-12 slide-panel items-center bg-[#EDDDD9] px-6">
+        <div class="col-span-10 portable-text font-avant-garde text-2xl md:text-6xl text-black font-medium tracking-[-1.2px]">
+          {eventsData?.introduction && <PortableText portableText={eventsData.introduction} />}
         </div>
       </div>
     </section>
 
     {slides.length ? (
-      slides.map((slide) =>
-        slide._type === "homepageGalleryPresentationSlide" ? (
+      slides.map((slide: any) =>
+        slide._type === "eventsGalleryPresentationSlide" ? (
           <HomepageIntroSlide slide={slide as PresentationSlide} />
         ) : (
           <HomepageProjectSlide slide={slide as Project} />
@@ -41,7 +38,7 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
       <section class="flex min-h-dvh snap-start items-center justify-center bg-stone-100 px-6">
         <div class="max-w-md text-center">
           <p class="text-pretty text-base text-neutral-600">
-            Ajoutez deux galleries dans Sanity pour remplir la homepage.
+            Ajoutez des galleries dans Sanity pour remplir la page événements.
           </p>
         </div>
       </section>
@@ -62,7 +59,7 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
 <script>
   const updateProjectCard = (card: HTMLElement) => {
     const state = Number(card.dataset.state || "0");
-    const galleryStates = Array.from(card.querySelectorAll("[data-gallery-state]"));
+    const galleryStates = Array.from(card.querySelectorAll("[data-gallery-state]")) as HTMLElement[];
     const progress = card.querySelector("[data-gallery-progress]");
     const mediaCounter = card.querySelector("[data-media-counter]");
 
@@ -105,8 +102,9 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
     updateProjectCard(card);
 
     card.addEventListener("click", (event) => {
+      const e = event as MouseEvent;
       const bounds = card.getBoundingClientRect();
-      const clickedOnRightHalf = event.clientX >= bounds.left + bounds.width / 2;
+      const clickedOnRightHalf = e.clientX >= bounds.left + bounds.width / 2;
 
       if (clickedOnRightHalf) {
         advanceProjectCard(card);
@@ -117,20 +115,21 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
     });
 
     card.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
+      const e = event as KeyboardEvent;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
         advanceProjectCard(card);
         return;
       }
 
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
         retreatProjectCard(card);
         return;
       }
 
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
         advanceProjectCard(card);
       }
     });

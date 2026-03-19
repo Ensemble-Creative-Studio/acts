@@ -92,4 +92,5 @@ export type HomepageGallery = {
 
 export type HomepageData = {
   galleries?: HomepageGallery[];
+  description?: string;
 };

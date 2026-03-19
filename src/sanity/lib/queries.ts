@@ -1,4 +1,5 @@
 export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
+  description,
   galleries[]{
     _key,
     slides[]{
@@ -99,4 +100,117 @@ export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
       }
     }
   }
+}`;
+
+export const eventsQuery = `*[_type == "events" && _id == "events"][0]{
+  introduction,
+  galleries[]{
+    _key,
+    slides[]{
+      ...,
+      _type == "reference" => @->{
+        _id,
+        _type,
+        name,
+        color,
+        credits[]{
+          _key,
+          jobs,
+          name
+        },
+        mainMedia{
+          mediaType,
+          caption,
+          image{
+            asset->{
+              url,
+              metadata{
+                dimensions{
+                  width,
+                  height
+                }
+              }
+            },
+            alt
+          },
+          video{
+            asset->{
+              playbackId
+            }
+          }
+        },
+        gallery[]{
+          ...,
+          image{
+            asset->{
+              url,
+              metadata{
+                dimensions{
+                  width,
+                  height
+                }
+              }
+            },
+            alt
+          },
+          leftMedia{
+            mediaType,
+            caption,
+            image{
+              asset->{
+                url,
+                metadata{
+                  dimensions{
+                    width,
+                    height
+                  }
+                }
+              },
+              alt
+            },
+            video{
+              asset->{
+                playbackId
+              }
+            }
+          },
+          rightMedia{
+            mediaType,
+            caption,
+            image{
+              asset->{
+                url,
+                metadata{
+                  dimensions{
+                    width,
+                    height
+                  }
+                }
+              },
+              alt
+            },
+            video{
+              asset->{
+                playbackId
+              }
+            }
+          },
+          video{
+            asset->{
+              playbackId
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
+
+export const infoQuery = `*[_type == "info" && _id == "info"][0]{
+  pageTitle,
+  content,
+  contactTitle,
+  email,
+  adresse,
+  instagram
 }`;

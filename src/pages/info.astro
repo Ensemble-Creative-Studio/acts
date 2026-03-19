@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getInfo } from '../sanity/lib/sanity-utils';
+import PortableText from '../components/PortableText.astro';
+import LogoLong from '../assets/logo_long.svg';
+
+const infoData = await getInfo();
+---
+
+<Layout title="Info">
+  <main class="min-h-screen relative flex flex-col pt-20 md:pt-[150px] pb-8">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-x-5 px-5 md:px-[42px] grow mb-5">
+      
+      <!-- Title Section -->
+      <div class="col-span-1 mb-4 md:col-span-12">
+        <h1 class="font-avant-garde text-[40px] md:text-[60px] leading-none md:leading-[60px] text-black font-semibold tracking-[-0.6px] whitespace-pre-line">
+          {infoData.pageTitle}
+        </h1>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-span-1 mb-16 md:col-span-9 md:mb-28">
+        <div class="portable-text font-avant-garde text-[24px] md:text-[36px] leading-[1.2] md:leading-[40px] text-black font-medium tracking-[-0.72px]">
+          <PortableText portableText={infoData.content} />
+        </div>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="col-span-1 mb-8 md:mb-16 md:col-span-6 flex flex-col gap-6 md:gap-[40px]">
+        {infoData.contactTitle && (
+          <h2 class="font-avant-garde text-[40px] md:text-[60px] leading-[1] md:leading-[40px] text-black font-semibold tracking-[-0.6px]">
+            {infoData.contactTitle}
+          </h2>
+        )}
+        
+        <div class="font-avant-garde text-2xl md:text-4xl leading-[1.2] md:leading-[40px] text-black font-medium tracking-[-0.72px] flex flex-col gap-0">
+          {infoData.email && (
+            <a href={`mailto:${infoData.email}`} class="hover:opacity-80 transition-opacity">
+              {infoData.email}
+            </a>
+          )}
+          {infoData.adresse && <p class="m-0">{infoData.adresse}</p>}
+        </div>
+
+        {infoData.instagram && (
+          <a 
+            href={infoData.instagram} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="font-avant-garde text-[24px] md:text-[36px] leading-[1.2] md:leading-[40px] text-black font-medium tracking-[-0.72px] hover:opacity-80 transition-opacity inline-block mt-4"
+          >
+            Instagram
+          </a>
+        )}
+      </div>
+      
+    </div>
+    <div class="mt-4 px-5 md:px-[42px]">
+      <LogoLong class="h-full w-full object-contain" />
+      <a href="https://ensemble.ooo" target="_blank" rel="noopener noreferrer" class="text-black text-sm font-avant-garde font-medium tracking-[-0.72px] inline-block mt-4">
+        Website by ensemble
+      </a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  :global(.portable-text p) {
+    margin-bottom: 20px;
+  }
+  :global(.portable-text p:last-child) {
+    margin-bottom: 0;
+  }
+</style>
