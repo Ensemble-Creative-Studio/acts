@@ -12,6 +12,8 @@
   position: relative;
   height: 200dvh;
   margin-bottom: -100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .slide-shell:last-child {
@@ -22,6 +24,17 @@
   position: sticky;
   top: 0;
   height: 100dvh;
+}
+
+@media (max-width: 767px) {
+  .slide-shell {
+    height: 100dvh;
+    margin-bottom: 0;
+  }
+
+  .slide-panel {
+    position: relative;
+  }
 }
 
 mux-player.mux-clean {
