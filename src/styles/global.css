@@ -8,11 +8,6 @@
   --font-avant-garde: itc-avant-garde-gothic-pro, sans-serif;
 }
 
-:root {
-  --mobile-slide-overlap: clamp(2.75rem, 8svh, 5rem);
-  --mobile-viewport-bg: #0a0a0a;
-}
-
 .slide-shell {
   position: relative;
   height: 200dvh;
@@ -32,32 +27,13 @@
 }
 
 @media (max-width: 767px) {
-  html,
-  body {
-    background: var(--mobile-viewport-bg);
-  }
-
-  .page-snap-container {
-    height: 100svh;
-    background: transparent;
-  }
-
   .slide-shell {
-    height: calc(100svh + var(--mobile-slide-overlap));
-    margin-bottom: calc(-1 * var(--mobile-slide-overlap));
-  }
-
-  .slide-panel {
-    top: 0;
-    height: 100svh;
-  }
-
-  .slide-shell:last-child {
+    height: 100dvh;
     margin-bottom: 0;
   }
 
-  .slide-shell:not(:first-child) .slide-panel {
-    box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.18);
+  .slide-panel {
+    position: relative;
   }
 }
 
