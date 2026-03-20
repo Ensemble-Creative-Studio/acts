@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
-import type { Project, ProjectCredit, ImageAsset } from "./types";
+import MuxVideoPlayer from "../MuxVideoPlayer";
+import type { Project, ProjectCredit, ImageAsset, ProjectGalleryItem } from "./types";
 
 type Props = {
   slide: Project;
@@ -17,15 +18,50 @@ const getImageData = (image?: ImageAsset) => ({
   height: image?.asset?.metadata?.dimensions?.height ?? 2000,
 });
 
-const getMuxPlaybackUrl = (playbackId?: string) =>
-  playbackId ? `https://stream.mux.com/${playbackId}.m3u8` : undefined;
+const getMuxPosterUrl = (playbackId?: string) =>
+  playbackId ? `https://image.mux.com/${playbackId}/thumbnail.webp?time=0` : undefined;
 
 const mainImage =
   slide.mainMedia?.mediaType === "image" ? getImageData(slide.mainMedia.image) : undefined;
+const mainPlaybackId =
+  slide.mainMedia?.mediaType === "video"
+    ? slide.mainMedia.video?.asset?.playbackId
+    : undefined;
+const mainPosterUrl =
+  slide.mainMedia?.mediaType === "video"
+    ? getMuxPosterUrl(slide.mainMedia.video?.asset?.playbackId)
+    : undefined;
 const galleryItems = slide.gallery ?? [];
-const maxState = galleryItems.length + 1;
+type GalleryStateEntry = {
+  item: ProjectGalleryItem;
+  itemIndex: number;
+  desktopState: number;
+  mobileStates: number[];
+};
+
+let desktopStateCursor = 2;
+let mobileStateCursor = 2;
+
+const galleryStateEntries: GalleryStateEntry[] = galleryItems.map((item, itemIndex) => {
+  const isSplitItem =
+    item._type === "projectGallerySplitLeft" || item._type === "projectGallerySplitRight";
+  const entry = {
+    item,
+    itemIndex,
+    desktopState: desktopStateCursor,
+    mobileStates: isSplitItem ? [mobileStateCursor, mobileStateCursor + 1] : [mobileStateCursor],
+  };
+
+  desktopStateCursor += 1;
+  mobileStateCursor += isSplitItem ? 2 : 1;
+
+  return entry;
+});
+
+const desktopMaxState = desktopStateCursor - 1;
+const mobileMaxState = mobileStateCursor - 1;
 const projectBackground = slide.color || "#f5e9e6";
-const mediaCount = galleryItems.length + 1;
+const mediaCount = desktopMaxState;
 const initialMediaCount = `1/${mediaCount}`;
 ---
 
@@ -34,7 +70,8 @@ const initialMediaCount = `1/${mediaCount}`;
     class="slide-panel group cursor-pointer overflow-hidden"
     data-project-card
     data-state="0"
-    data-max-state={maxState}
+    data-max-state-desktop={desktopMaxState}
+    data-max-state-mobile={mobileMaxState}
     tabindex="0"
     role="button"
     aria-label={`Reveal ${slide.name || "project"} gallery`}
@@ -42,15 +79,31 @@ const initialMediaCount = `1/${mediaCount}`;
   >
     <div class="relative flex h-full items-center justify-center">
     <div
-      class="relative z-0 flex w-full max-w-7xl items-center justify-center px-5 py-8 transition-opacity duration-300 ease-out group-data-[state=0]:opacity-100 group-data-[state=1]:opacity-100 group-data-[state=2]:opacity-0 group-data-[state=3]:opacity-0 group-data-[state=4]:opacity-0 group-data-[state=5]:opacity-0 sm:px-8 md:px-12"
+      class="relative z-0 flex w-full max-w-7xl items-center justify-center px-5 py-8 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0 sm:px-8 md:px-12"
       data-main-media
+      data-visible="true"
     >
-      <div class="relative aspect-4/5 w-[min(38vw,33rem)] min-w-[16rem] overflow-hidden sm:w-[min(36vw,36rem)]">
-        {mainImage?.src ? (
+      <div
+        class={`relative flex items-center justify-center ${
+          slide.mainMedia?.mediaType === "video"
+            ? "max-h-[72dvh] w-auto max-w-[min(82vw,72rem)] overflow-hidden"
+            : "max-h-[72dvh] min-w-72 md:min-w-200"
+        }`}
+      >
+        {slide.mainMedia?.mediaType === "video" && mainPlaybackId ? (
+          <MuxVideoPlayer
+            client:load
+            className="mux-clean h-full w-auto max-w-full object-contain"
+            playbackId={mainPlaybackId}
+            poster={mainPosterUrl}
+            title={slide.name || "Project video"}
+            fit="contain"
+          />
+        ) : mainImage?.src ? (
           <Image
             src={mainImage.src}
             alt={slide.mainMedia?.image?.alt || slide.name || "Project image"}
-            class="size-full object-contain"
+            class="h-auto max-h-[72dvh] w-auto max-w-full object-contain"
             width={mainImage.width}
             height={mainImage.height}
             loading="lazy"
@@ -64,9 +117,10 @@ const initialMediaCount = `1/${mediaCount}`;
     </div>
 
     <div class="pointer-events-none absolute inset-0 z-10">
-      {galleryItems.map((item, itemIndex) => {
-        const stateIndex = itemIndex + 2;
-        const stateValue = String(stateIndex);
+      {galleryStateEntries.map(({ item, itemIndex, desktopState, mobileStates }) => {
+        const desktopStateValue = String(desktopState);
+        const firstMobileStateValue = String(mobileStates[0]);
+        const secondMobileStateValue = String(mobileStates[1] ?? mobileStates[0]);
 
         if (item._type === "projectGalleryFullImageRow") {
           const image = getImageData(item.image);
@@ -74,16 +128,19 @@ const initialMediaCount = `1/${mediaCount}`;
           return (
             <div
               class="absolute inset-0 flex items-center justify-center px-5 py-8 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 sm:px-8 md:px-12"
-              data-gallery-state={stateValue}
+              data-gallery-panel
+              data-gallery-item-index={String(itemIndex)}
+              data-gallery-desktop-state={desktopStateValue}
+              data-gallery-mobile-state={firstMobileStateValue}
               data-visible="false"
             >
               <div class="flex h-full w-full items-center justify-center">
-                <div class="relative flex h-full w-full items-center justify-center overflow-hidden">
+                <div class="relative flex max-h-[72dvh] w-full max-w-[min(84vw,78rem)] items-center justify-center overflow-hidden">
                   {image.src ? (
                     <Image
                       src={image.src}
                       alt={item.image?.alt || slide.name || "Gallery image"}
-                      class="size-full object-contain"
+                      class="max-h-[72dvh] w-auto max-w-full object-contain"
                       width={image.width}
                       height={image.height}
                       loading="lazy"
@@ -100,23 +157,27 @@ const initialMediaCount = `1/${mediaCount}`;
         }
 
         if (item._type === "projectGalleryFullVideoRow") {
-          const playbackUrl = getMuxPlaybackUrl(item.video?.asset?.playbackId);
+          const playbackId = item.video?.asset?.playbackId;
+          const posterUrl = getMuxPosterUrl(playbackId);
 
           return (
             <div
               class="absolute inset-0 flex items-center justify-center px-5 py-8 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 sm:px-8 md:px-12"
-              data-gallery-state={stateValue}
+              data-gallery-panel
+              data-gallery-item-index={String(itemIndex)}
+              data-gallery-desktop-state={desktopStateValue}
+              data-gallery-mobile-state={firstMobileStateValue}
               data-visible="false"
             >
-              <div class="flex h-full w-full items-center justify-center bg-neutral-900">
-                {playbackUrl ? (
-                  <video
-                    class="size-full object-contain"
-                    src={playbackUrl}
-                    playsinline
-                    muted
-                    autoplay
-                    loop
+              <div class="flex max-h-[72dvh] w-full max-w-[min(84vw,78rem)] items-center justify-center bg-neutral-900">
+                {playbackId ? (
+                  <MuxVideoPlayer
+                    client:load
+                    className="mux-clean max-h-[72dvh] w-auto max-w-full object-contain"
+                    playbackId={playbackId}
+                    poster={posterUrl}
+                    title={slide.name || "Gallery video"}
+                    fit="contain"
                   />
                 ) : (
                   <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-300">
@@ -135,46 +196,53 @@ const initialMediaCount = `1/${mediaCount}`;
           leftMedia?.mediaType === "image" ? getImageData(leftMedia.image) : undefined;
         const rightImage =
           rightMedia?.mediaType === "image" ? getImageData(rightMedia.image) : undefined;
+        const leftPlaybackId =
+          leftMedia?.mediaType === "video"
+            ? leftMedia.video?.asset?.playbackId
+            : undefined;
+        const rightPlaybackId =
+          rightMedia?.mediaType === "video"
+            ? rightMedia.video?.asset?.playbackId
+            : undefined;
+        const leftPosterUrl =
+          leftMedia?.mediaType === "video"
+            ? getMuxPosterUrl(leftPlaybackId)
+            : undefined;
+        const rightPosterUrl =
+          rightMedia?.mediaType === "video"
+            ? getMuxPosterUrl(rightPlaybackId)
+            : undefined;
 
         return (
-          <div
-            class="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100"
-            data-gallery-state={stateValue}
-            data-visible="false"
-          >
+          <>
             <div
-              class="flex h-full w-full flex-col md:flex-row"
-              style={`background-color: ${projectBackground};`}
+              class="absolute inset-0 hidden opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 md:block"
+              data-gallery-panel
+              data-gallery-item-index={String(itemIndex)}
+              data-gallery-desktop-state={desktopStateValue}
+              data-visible="false"
             >
               <div
-                class={`relative h-[50dvh] w-full overflow-hidden md:h-full ${
-                  leftIsLarge ? "md:basis-[60%]" : "md:basis-[40%]"
-                }`}
+                class="flex h-full w-full flex-col md:flex-row"
+                style={`background-color: ${projectBackground};`}
               >
-                {leftIsLarge ? (
-                  <div class="flex h-full w-full items-center justify-start">
-                    {leftImage?.src ? (
-                      <Image
-                        src={leftImage.src}
-                        alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
-                        class="h-full w-auto object-contain object-left"
-                        width={leftImage.width}
-                        height={leftImage.height}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
-                        {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div
-                    class="flex h-full w-full items-center justify-start"
-                    style={`background-color: ${projectBackground};`}
-                  >
-                    <div class="relative h-full w-auto overflow-hidden md:mr-auto md:max-h-[60dvh]">
-                      {leftImage?.src ? (
+                <div
+                  class={`relative h-[50dvh] w-full overflow-hidden md:h-full ${
+                    leftIsLarge ? "md:basis-[60%]" : "md:basis-[40%]"
+                  }`}
+                >
+                  {leftIsLarge ? (
+                    <div class="flex h-full w-full items-center justify-start">
+                      {leftMedia?.mediaType === "video" && leftPlaybackId ? (
+                        <MuxVideoPlayer
+                          client:load
+                          className="mux-clean h-full w-auto object-contain object-left"
+                          playbackId={leftPlaybackId}
+                          poster={leftPosterUrl}
+                          title={slide.name || "Gallery video"}
+                          fit="contain"
+                        />
+                      ) : leftImage?.src ? (
                         <Image
                           src={leftImage.src}
                           alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
@@ -189,27 +257,89 @@ const initialMediaCount = `1/${mediaCount}`;
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <div
+                      class="flex h-full w-full items-center justify-start"
+                      style={`background-color: ${projectBackground};`}
+                    >
+                      <div class="relative h-full w-auto overflow-hidden md:mr-auto md:max-h-[60dvh]">
+                        {leftMedia?.mediaType === "video" && leftPlaybackId ? (
+                          <MuxVideoPlayer
+                            client:load
+                            className="mux-clean h-full w-auto object-contain object-left"
+                            playbackId={leftPlaybackId}
+                            poster={leftPosterUrl}
+                            title={slide.name || "Gallery video"}
+                            fit="contain"
+                          />
+                        ) : leftImage?.src ? (
+                          <Image
+                            src={leftImage.src}
+                            alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
+                            class="h-full w-auto object-contain object-left"
+                            width={leftImage.width}
+                            height={leftImage.height}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
+                            {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-              <div
-                class={`flex w-full items-center px-0 py-0 md:h-full md:px-0 md:py-0 ${
-                  leftIsLarge
-                    ? "md:basis-[40%] md:justify-end"
-                    : "md:basis-[60%] md:justify-end"
-                }`}
-                style={`background-color: ${projectBackground};`}
-              >
                 <div
-                  class={`relative overflow-hidden ${
+                  class={`flex w-full items-center px-0 py-0 md:h-full md:px-0 md:py-0 ${
                     leftIsLarge
-                      ? "h-[50dvh] w-full md:ml-auto md:max-h-[60dvh] md:w-auto"
-                      : "h-[50dvh] w-full md:h-full md:w-auto"
+                      ? "md:basis-[40%] md:justify-end"
+                      : "md:basis-[60%] md:justify-end"
                   }`}
+                  style={`background-color: ${projectBackground};`}
                 >
-                  {leftIsLarge ? (
-                    rightImage?.src ? (
+                  <div
+                    class={`relative overflow-hidden ${
+                      leftIsLarge
+                        ? "h-[50dvh] w-full md:ml-auto md:max-h-[60dvh] md:w-auto"
+                        : "h-[50dvh] w-full md:h-full md:w-auto"
+                    }`}
+                  >
+                    {leftIsLarge ? (
+                      rightMedia?.mediaType === "video" && rightPlaybackId ? (
+                        <MuxVideoPlayer
+                          client:load
+                          className="mux-clean h-full w-auto object-contain object-right"
+                          playbackId={rightPlaybackId}
+                          poster={rightPosterUrl}
+                          title={slide.name || "Gallery video"}
+                          fit="contain"
+                        />
+                      ) : rightImage?.src ? (
+                        <Image
+                          src={rightImage.src}
+                          alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
+                          class="h-full w-auto object-contain object-right"
+                          width={rightImage.width}
+                          height={rightImage.height}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-600">
+                          {rightMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                        </div>
+                      )
+                    ) : rightMedia?.mediaType === "video" && rightPlaybackId ? (
+                      <MuxVideoPlayer
+                        client:load
+                        className="mux-clean h-full w-auto object-contain object-right"
+                        playbackId={rightPlaybackId}
+                        poster={rightPosterUrl}
+                        title={slide.name || "Gallery video"}
+                        fit="contain"
+                      />
+                    ) : rightImage?.src ? (
                       <Image
                         src={rightImage.src}
                         alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
@@ -222,32 +352,98 @@ const initialMediaCount = `1/${mediaCount}`;
                       <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-600">
                         {rightMedia?.mediaType === "video" ? "Video" : "Image manquante"}
                       </div>
-                    )
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 md:hidden"
+              data-gallery-panel
+              data-gallery-item-index={String(itemIndex)}
+              data-gallery-mobile-state={firstMobileStateValue}
+              data-visible="false"
+            >
+              <div
+                class="flex h-full w-full items-center justify-center px-5 py-8"
+                style={`background-color: ${projectBackground};`}
+              >
+                <div class="relative flex h-full w-full items-center justify-center overflow-hidden">
+                  {leftMedia?.mediaType === "video" && leftPlaybackId ? (
+                    <MuxVideoPlayer
+                      client:load
+                      className="mux-clean h-full w-auto max-w-full object-contain"
+                      playbackId={leftPlaybackId}
+                      poster={leftPosterUrl}
+                      title={slide.name || "Gallery video"}
+                      fit="contain"
+                    />
+                  ) : leftImage?.src ? (
+                    <Image
+                      src={leftImage.src}
+                      alt={leftMedia?.image?.alt || slide.name || "Gallery image"}
+                      class="h-full w-auto max-w-full object-contain"
+                      width={leftImage.width}
+                      height={leftImage.height}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
+                      {leftMedia?.mediaType === "video" ? "Video" : "Image manquante"}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out data-[visible='true']:opacity-100 md:hidden"
+              data-gallery-panel
+              data-gallery-item-index={String(itemIndex)}
+              data-gallery-mobile-state={secondMobileStateValue}
+              data-visible="false"
+            >
+              <div
+                class="flex h-full w-full items-center justify-center px-5 py-8"
+              style={`background-color: ${projectBackground};`}
+            >
+                <div class="relative flex h-full w-full items-center justify-center overflow-hidden">
+                  {rightMedia?.mediaType === "video" && rightPlaybackId ? (
+                    <MuxVideoPlayer
+                      client:load
+                      className="mux-clean h-full w-auto max-w-full object-contain"
+                      playbackId={rightPlaybackId}
+                      poster={rightPosterUrl}
+                      title={slide.name || "Gallery video"}
+                      fit="contain"
+                    />
                   ) : rightImage?.src ? (
                     <Image
                       src={rightImage.src}
                       alt={rightMedia?.image?.alt || slide.name || "Gallery image"}
-                      class="h-full w-auto object-contain object-right"
+                      class="h-full w-auto max-w-full object-contain"
                       width={rightImage.width}
                       height={rightImage.height}
                       loading="lazy"
                     />
                   ) : (
-                    <div class="flex size-full items-center justify-center px-6 text-center text-sm uppercase text-stone-600">
+                    <div class="flex size-full items-center justify-center bg-stone-300 px-6 text-center text-sm uppercase text-stone-600">
                       {rightMedia?.mediaType === "video" ? "Video" : "Image manquante"}
                     </div>
                   )}
                 </div>
               </div>
             </div>
-          </div>
+          </>
         );
       })}
     </div>
 
     <div
-      class="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4 transition-opacity duration-300 ease-out group-data-[state=0]:opacity-100 group-data-[state=1]:opacity-0 group-data-[state=2]:opacity-0 group-data-[state=3]:opacity-0 group-data-[state=4]:opacity-0 group-data-[state=5]:opacity-0"
+      class="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0"
       data-project-title
+      data-visible="true"
       style="mix-blend-mode: difference;"
     >
       <h2 class="text-balance font-avant-garde text-center text-5xl md:text-10xl font-semibold uppercase leading-none text-white">

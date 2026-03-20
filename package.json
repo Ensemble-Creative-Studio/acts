@@ -14,6 +14,7 @@
   "dependencies": {
     "@astrojs/react": "^5.0.0",
     "@astrojs/vercel": "^10.0.0",
+    "@mux/mux-player-react": "^3.11.6",
     "@portabletext/types": "^4.0.2",
     "@sanity/astro": "^3.3.1",
     "@sanity/client": "^7.17.0",
