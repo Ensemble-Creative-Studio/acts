@@ -18,6 +18,10 @@ const eventsGalleryPresentationSlideType = defineType({
   name: "eventsGalleryPresentationSlide",
   title: "Gallery presentation",
   type: "object",
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "seo", title: "SEO" },
+  ],
   fields: [
     defineField({
       name: "title",
@@ -29,7 +33,14 @@ const eventsGalleryPresentationSlideType = defineType({
       name: "subtitle",
       title: "Subtitle",
       type: "string",
-      description: "Optional short supporting text for the gallery introduction.",
+      description:
+        "Optional short supporting text for the gallery introduction.",
+    }),
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "seoFields",
+      group: "seo",
     }),
   ],
   preview: {
@@ -104,6 +115,7 @@ export const eventsType = defineType({
   groups: [
     { name: "content", title: "Content", default: true },
     { name: "galleries", title: "Galleries" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
@@ -118,13 +130,20 @@ export const eventsType = defineType({
       title: "Galleries",
       type: "array",
       group: "galleries",
-      description: "Add one or more event galleries. Each new gallery is prefilled with a presentation slide.",
+      description:
+        "Add one or more event galleries. Each new gallery is prefilled with a presentation slide.",
       of: [defineArrayMember({ type: "eventsGallery" })],
       options: {
         insertMenu: {
           views: [{ name: "list" }],
         },
       },
+    }),
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "seoFields",
+      group: "seo",
     }),
   ],
   preview: {

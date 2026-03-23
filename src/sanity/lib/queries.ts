@@ -1,4 +1,9 @@
 export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
+  seo {
+    seoTitle,
+    seoDescription,
+    "seoImage": seoImage.asset->url
+  },
   description,
   galleries[]{
     _key,
@@ -103,6 +108,11 @@ export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
 }`;
 
 export const eventsQuery = `*[_type == "events" && _id == "events"][0]{
+  seo {
+    seoTitle,
+    seoDescription,
+    "seoImage": seoImage.asset->url
+  },
   introduction,
   galleries[]{
     _key,
@@ -207,6 +217,11 @@ export const eventsQuery = `*[_type == "events" && _id == "events"][0]{
 }`;
 
 export const infoQuery = `*[_type == "info" && _id == "info"][0]{
+  seo {
+    seoTitle,
+    seoDescription,
+    "seoImage": seoImage.asset->url
+  },
   pageTitle,
   content,
   contactTitle,

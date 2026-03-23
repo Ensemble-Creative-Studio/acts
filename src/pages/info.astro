@@ -7,7 +7,11 @@ import LogoLong from '../assets/logo_long.svg';
 const infoData = await getInfo();
 ---
 
-<Layout title="Info">
+<Layout
+  title={infoData?.seo?.seoTitle || "Info"}
+  description={infoData?.seo?.seoDescription}
+  image={infoData?.seo?.seoImage}
+>
   <main class="min-h-screen relative flex flex-col pt-20 md:pt-[150px] pb-8">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-x-5 px-5 md:px-[42px] grow mb-5">
       

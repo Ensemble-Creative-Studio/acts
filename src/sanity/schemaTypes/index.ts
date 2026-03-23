@@ -6,6 +6,7 @@ import { infoSchemaTypes } from "./info";
 import { optionType } from "./option";
 import { projectSchemaTypes } from "./project";
 import colorInput from "./objects/colorInput";
+import seoFields from "./objects/seoFields";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -16,5 +17,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     ...infoSchemaTypes,
     ...projectSchemaTypes,
     colorInput,
+    seoFields,
   ],
 };

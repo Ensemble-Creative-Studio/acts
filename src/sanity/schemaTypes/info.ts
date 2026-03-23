@@ -4,6 +4,10 @@ export const infoType = defineType({
   name: "info",
   title: "Info",
   type: "document",
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "seo", title: "SEO" },
+  ],
   fields: [
     defineField({
       name: "pageTitle",
@@ -36,6 +40,12 @@ export const infoType = defineType({
       name: "instagram",
       title: "Instagram",
       type: "url",
+    }),
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "seoFields",
+      group: "seo",
     }),
   ],
   preview: {

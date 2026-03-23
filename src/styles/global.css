@@ -26,6 +26,18 @@
   height: 100dvh;
 }
 
+.project-card-cursor-zone {
+  pointer-events: auto;
+}
+
+.project-card-cursor-zone--left {
+  cursor: var(--project-cursor-left) 24 45, w-resize;
+}
+
+.project-card-cursor-zone--right {
+  cursor: var(--project-cursor-right) 24 45, e-resize;
+}
+
 @media (max-width: 767px) {
   .slide-shell {
     height: 100dvh;

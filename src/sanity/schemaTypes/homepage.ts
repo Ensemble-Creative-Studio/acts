@@ -29,7 +29,8 @@ const homepageGalleryPresentationSlideType = defineType({
       name: "subtitle",
       title: "Subtitle",
       type: "string",
-      description: "Optional short supporting text for the gallery introduction.",
+      description:
+        "Optional short supporting text for the gallery introduction.",
     }),
   ],
   preview: {
@@ -68,7 +69,8 @@ const homepageGalleryType = defineType({
           to: [{ type: "project" }],
         }),
       ],
-      validation: (Rule) => Rule.required().custom(validateHomepageGallerySlides),
+      validation: (Rule) =>
+        Rule.required().custom(validateHomepageGallerySlides),
       options: {
         insertMenu: {
           views: [{ name: "list" }],
@@ -104,6 +106,7 @@ export const homepageType = defineType({
   groups: [
     { name: "content", title: "Content", default: true },
     { name: "galleries", title: "Galleries" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
@@ -127,13 +130,20 @@ export const homepageType = defineType({
       title: "Galleries",
       type: "array",
       group: "galleries",
-      description: "Add one or more homepage galleries. Each new gallery is prefilled with a presentation slide.",
+      description:
+        "Add one or more homepage galleries. Each new gallery is prefilled with a presentation slide.",
       of: [defineArrayMember({ type: "homepageGallery" })],
       options: {
         insertMenu: {
           views: [{ name: "list" }],
         },
       },
+    }),
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "seoFields",
+      group: "seo",
     }),
   ],
   preview: {

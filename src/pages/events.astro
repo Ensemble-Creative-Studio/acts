@@ -16,7 +16,11 @@ const galleries = (eventsData?.galleries ?? []).slice(0, 2);
 const slides = galleries.flatMap((gallery: any) => gallery.slides);
 ---
 
-<Layout title="Events">
+<Layout
+  title={eventsData?.seo?.seoTitle || "Events"}
+  description={eventsData?.seo?.seoDescription}
+  image={eventsData?.seo?.seoImage}
+>
   <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory bg-stone-100 text-neutral-950">
     <section class="slide-shell snap-start">
       <div class="grid grid-cols-12 slide-panel items-center bg-[#EDDDD9] px-6">
