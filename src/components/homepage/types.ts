@@ -79,6 +79,7 @@ export type Project = {
 export type PresentationSlide = {
   _key?: string;
   _type: "homepageGalleryPresentationSlide";
+  color?: string;
   title?: string;
   subtitle?: string;
 };

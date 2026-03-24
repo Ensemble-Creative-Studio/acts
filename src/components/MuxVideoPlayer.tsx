@@ -66,7 +66,9 @@ export default function MuxVideoPlayer({
   fit = "contain",
 }: Props) {
   const videoRef = useRef<MuxPlayerElement>(null);
-  const hideControlsTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const hideControlsTimeoutRef = useRef<ReturnType<
+    typeof window.setTimeout
+  > | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -76,6 +78,11 @@ export default function MuxVideoPlayer({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [isHoveringSurface, setIsHoveringSurface] = useState(false);
+  const [cursorLabelPosition, setCursorLabelPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     const player = videoRef.current;
@@ -233,7 +240,9 @@ export default function MuxVideoPlayer({
     setShowControls(true);
   };
 
-  const handleVideoSurfaceClick = () => {
+  const handleVideoSurfaceClick = (event: ReactMouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+
     if (isTouchDevice && isPlaying && !showControls) {
       setShowControls(true);
       return;
@@ -343,9 +352,38 @@ export default function MuxVideoPlayer({
       ? (currentTime / duration) * 100
       : 0;
 
+  const handleSurfaceMouseEnter = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (isTouchDevice) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setCursorLabelPosition({
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    });
+    setIsHoveringSurface(true);
+  };
+
+  const handleSurfaceMouseMove = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (isTouchDevice) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setCursorLabelPosition({
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    });
+  };
+
+  const handleSurfaceMouseLeave = () => {
+    setIsHoveringSurface(false);
+  };
+
   return (
     <div
-      className={`flex h-full w-full max-h-full max-w-full flex-col items-center justify-center ${className ?? ""}`}
+      className={`relative z-40 flex h-full w-full max-h-full max-w-full flex-col items-center justify-center ${className ?? ""}`}
     >
       <div className="group/video relative h-full w-auto max-h-full max-w-full pointer-events-auto">
         {!isPlaying && (
@@ -368,8 +406,11 @@ export default function MuxVideoPlayer({
         )}
 
         <div
-          className="h-full w-full max-h-full max-w-full cursor-pointer"
+          className={`relative h-full w-full max-h-full max-w-full ${isTouchDevice ? "cursor-pointer" : "cursor-none"}`}
           onClick={handleVideoSurfaceClick}
+          onMouseEnter={handleSurfaceMouseEnter}
+          onMouseMove={handleSurfaceMouseMove}
+          onMouseLeave={handleSurfaceMouseLeave}
         >
           <MuxPlayer
             playbackId={playbackId}
@@ -390,6 +431,20 @@ export default function MuxVideoPlayer({
             disableTracking
             style={playerStyles}
           />
+
+          {!isTouchDevice && isHoveringSurface && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-0 top-0 z-30"
+              style={{
+                transform: `translate(${cursorLabelPosition.x}px, ${cursorLabelPosition.y}px)`,
+              }}
+            >
+              <span className="-translate-x-1/2 -translate-y-1/2 block whitespace-nowrap font-avant-garde text-2xl font-semibold uppercase text-white mix-blend-difference md:text-4xl">
+                {isPlaying ? "PAUSE" : "PLAY"}
+              </span>
+            </div>
+          )}
         </div>
 
         <div
