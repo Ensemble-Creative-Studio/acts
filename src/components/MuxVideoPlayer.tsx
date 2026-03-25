@@ -33,7 +33,7 @@ type Props = {
 };
 
 const shouldPlay = (player: MuxPlayerElement) => {
-  const panel = player.closest("[data-gallery-state]") as HTMLElement | null;
+  const panel = player.closest("[data-gallery-panel]") as HTMLElement | null;
   if (panel) {
     return panel.dataset.visible === "true";
   }
@@ -46,6 +46,36 @@ const shouldPlay = (player: MuxPlayerElement) => {
   }
 
   return true;
+};
+
+const isElementInViewport = (element: Element | null) => {
+  if (!(element instanceof HTMLElement)) {
+    return true;
+  }
+
+  const rect = element.getBoundingClientRect();
+  const viewportHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth =
+    window.innerWidth || document.documentElement.clientWidth;
+
+  if (rect.width === 0 || rect.height === 0) {
+    return false;
+  }
+
+  const visibleHeight =
+    Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+  const visibleWidth =
+    Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0);
+
+  if (visibleHeight <= 0 || visibleWidth <= 0) {
+    return false;
+  }
+
+  const visibleArea = visibleHeight * visibleWidth;
+  const totalArea = rect.width * rect.height;
+
+  return visibleArea / totalArea >= 0.6;
 };
 
 const formatTime = (value: number) => {
@@ -79,10 +109,54 @@ export default function MuxVideoPlayer({
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [isHoveringSurface, setIsHoveringSurface] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(false);
   const [cursorLabelPosition, setCursorLabelPosition] = useState({
     x: 0,
     y: 0,
   });
+
+  useEffect(() => {
+    const player = videoRef.current;
+    if (!player) {
+      return;
+    }
+
+    const visibilityTarget =
+      (player.closest("[data-project-card]") as HTMLElement | null) ?? player;
+
+    const syncVisibility = () => {
+      setIsInViewport(isElementInViewport(visibilityTarget));
+    };
+
+    syncVisibility();
+
+    if (typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        const isVisible =
+          entry.isIntersecting &&
+          (entry.intersectionRatio >= 0.6 ||
+            isElementInViewport(visibilityTarget));
+        setIsInViewport(isVisible);
+      },
+      {
+        threshold: [0, 0.25, 0.5, 0.6, 0.75, 1],
+      },
+    );
+
+    observer.observe(visibilityTarget);
+
+    window.addEventListener("resize", syncVisibility);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncVisibility);
+    };
+  }, []);
 
   useEffect(() => {
     const player = videoRef.current;
@@ -102,7 +176,7 @@ export default function MuxVideoPlayer({
       player.playsInline = true;
       setIsMuted(media.muted);
 
-      if (shouldPlay(player)) {
+      if (isInViewport && shouldPlay(player)) {
         media.play().catch(() => {});
       } else {
         media.pause();
@@ -110,7 +184,7 @@ export default function MuxVideoPlayer({
     };
 
     const card = player.closest("[data-project-card]");
-    const panel = player.closest("[data-gallery-state]");
+    const panel = player.closest("[data-gallery-panel]");
     const observers: MutationObserver[] = [];
 
     if (card) {
@@ -136,7 +210,7 @@ export default function MuxVideoPlayer({
     return () => {
       observers.forEach((observer) => observer.disconnect());
     };
-  }, []);
+  }, [isInViewport]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(hover: none), (pointer: coarse)");
@@ -424,7 +498,6 @@ export default function MuxVideoPlayer({
             onEnded={handleVideoEnd}
             onLoadedMetadata={handleLoadedMetadata}
             onCanPlay={() => setIsLoaded(true)}
-            autoPlay="muted"
             muted
             loop
             playsInline
