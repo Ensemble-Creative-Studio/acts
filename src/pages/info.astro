@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { getInfo } from '../sanity/lib/sanity-utils';
 import PortableText from '../components/PortableText.astro';
 import LogoLong from '../assets/logo_long.svg';
+import InstagramIcon from '../assets/instagram.svg';
 
 const infoData = await getInfo();
 ---
@@ -51,9 +52,10 @@ const infoData = await getInfo();
             href={infoData.instagram} 
             target="_blank" 
             rel="noopener noreferrer" 
-            class="font-avant-garde text-[24px] md:text-[36px] leading-[1.2] md:leading-[40px] text-black font-medium tracking-[-0.72px] hover:opacity-80 transition-opacity inline-block mt-4"
+            class="hover:opacity-80 transition-opacity inline-block mt-4"
+            aria-label="Instagram"
           >
-            Instagram
+            <InstagramIcon class="h-[60px] w-auto" />
           </a>
         )}
       </div>
