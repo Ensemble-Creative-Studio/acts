@@ -67,6 +67,7 @@ const mediaCount = desktopMaxState;
 const initialMediaCount = `1/${mediaCount}`;
 const arrowCursorLeftUrl = `data:image/svg+xml,${encodeURIComponent(arrowCursorLeftRaw)}`;
 const arrowCursorRightUrl = `data:image/svg+xml,${encodeURIComponent(arrowCursorRightRaw)}`;
+const isMainMediaVideo = slide.mainMedia?.mediaType === "video";
 ---
 
 <section class="slide-shell snap-start">
@@ -452,9 +453,13 @@ const arrowCursorRightUrl = `data:image/svg+xml,${encodeURIComponent(arrowCursor
       class="pointer-events-none absolute inset-0 z-50 flex items-center justify-center px-4 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0"
       data-project-title
       data-visible="true"
-      style="mix-blend-mode: multiply;"
+      style={isMainMediaVideo ? "mix-blend-mode: difference;" : undefined}
     >
-      <h2 class="absolute text-balance font-avant-garde text-center text-5xl md:text-7xl font-semibold uppercase leading-none text-black">
+      <h2
+        class={`absolute text-balance font-avant-garde text-center text-5xl md:text-7xl font-semibold uppercase leading-none ${
+          isMainMediaVideo ? "text-white" : "text-black"
+        }`}
+      >
         {slide.name || "Untitled Project"}
       </h2>
 
