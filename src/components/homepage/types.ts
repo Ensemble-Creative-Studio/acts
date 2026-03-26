@@ -78,7 +78,9 @@ export type Project = {
 
 export type PresentationSlide = {
   _key?: string;
-  _type: "homepageGalleryPresentationSlide";
+  _type:
+    | "homepageGalleryPresentationSlide"
+    | "eventsGalleryPresentationSlide";
   color?: string;
   title?: string;
   subtitle?: string;

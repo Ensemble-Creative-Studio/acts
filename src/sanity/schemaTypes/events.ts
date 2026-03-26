@@ -24,6 +24,12 @@ const eventsGalleryPresentationSlideType = defineType({
   ],
   fields: [
     defineField({
+      name: "color",
+      title: "Color",
+      type: "colorInput",
+      description: "Background color used for this intro slide.",
+    }),
+    defineField({
       name: "title",
       title: "Title",
       type: "string",
