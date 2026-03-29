@@ -5,7 +5,7 @@ export const infoType = defineType({
   title: "Info",
   type: "document",
   groups: [
-    { name: "content", title: "Content", default: true },
+    { name: "content", title: "Content" },
     { name: "seo", title: "SEO" },
   ],
   fields: [

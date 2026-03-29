@@ -110,7 +110,7 @@ export const homepageType = defineType({
   title: "Homepage",
   type: "document",
   groups: [
-    { name: "content", title: "Content", default: true },
+    { name: "content", title: "Content" },
     { name: "galleries", title: "Galleries" },
     { name: "seo", title: "SEO" },
   ],

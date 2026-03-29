@@ -259,7 +259,7 @@ export const projectType = defineType({
   title: "Project",
   type: "document",
   groups: [
-    { name: "content", title: "Content", default: true },
+    { name: "content", title: "Content" },
     { name: "hero", title: "Hero media" },
     { name: "gallery", title: "Gallery" },
   ],

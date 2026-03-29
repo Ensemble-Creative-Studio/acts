@@ -5,7 +5,7 @@ export const optionType = defineType({
   title: "Option",
   type: "document",
   groups: [
-    { name: "identity", title: "Identity", default: true },
+    { name: "identity", title: "Identity" },
     { name: "seo", title: "SEO" },
   ],
   fields: [

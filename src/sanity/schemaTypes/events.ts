@@ -19,7 +19,7 @@ const eventsGalleryPresentationSlideType = defineType({
   title: "Gallery presentation",
   type: "object",
   groups: [
-    { name: "content", title: "Content", default: true },
+    { name: "content", title: "Content" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
@@ -119,7 +119,7 @@ export const eventsType = defineType({
   title: "Events",
   type: "document",
   groups: [
-    { name: "content", title: "Content", default: true },
+    { name: "content", title: "Content" },
     { name: "galleries", title: "Galleries" },
     { name: "seo", title: "SEO" },
   ],
