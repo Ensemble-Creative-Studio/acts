@@ -1,9 +1,53 @@
 ---
-import LogoLong from "../../assets/logo_long.svg";
+import heroAnimation from "../../assets/animations/hero-animation.json";
 ---
 
 <section class="slide-shell snap-start">
-  <div class="slide-panel flex items-center justify-center bg-[#EDDDD9] px-6">
-    <LogoLong class="h-full w-full object-contain" />
+  <div class="slide-panel flex items-center justify-center bg-[#EDDDD9]">
+    <div
+      class="hero-animation w-full"
+      data-animation={JSON.stringify(heroAnimation)}
+      aria-label="Hero animation"
+    ></div>
   </div>
 </section>
+
+<script>
+  import lottie from "lottie-web";
+
+  document.querySelectorAll(".hero-animation").forEach((container) => {
+    if (!(container instanceof HTMLElement) || container.dataset.lottieMounted) {
+      return;
+    }
+
+    const rawAnimation = container.dataset.animation;
+    if (!rawAnimation) {
+      return;
+    }
+
+    container.dataset.lottieMounted = "true";
+
+    lottie.loadAnimation({
+      container,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: JSON.parse(rawAnimation),
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid meet",
+      },
+    });
+  });
+</script>
+
+<style>
+  .hero-animation {
+    width: 100%;
+  }
+
+  .hero-animation :global(svg) {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+  }
+</style>
