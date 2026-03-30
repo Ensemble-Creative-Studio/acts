@@ -6,9 +6,17 @@ interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+	hideHeaderUntilHeroEnd?: boolean;
+	heroSeenStorageKey?: string;
 }
 
-const { title = "Ensemble", description, image } = Astro.props;
+const {
+	title = "Ensemble",
+	description,
+	image,
+	hideHeaderUntilHeroEnd = false,
+	heroSeenStorageKey,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -29,9 +37,23 @@ const { title = "Ensemble", description, image } = Astro.props;
 		<meta name="twitter:title" content={title} />
 		{description && <meta name="twitter:description" content={description} />}
 		{image && <meta name="twitter:image" content={image} />}
+		{heroSeenStorageKey && (
+			<script is:inline define:vars={{ heroSeenStorageKey }}>
+				try {
+					const hasSeenHero = window.localStorage.getItem(heroSeenStorageKey) === "true";
+					document.documentElement.dataset.heroSeen = hasSeenHero ? "true" : "false";
+
+					if (hasSeenHero) {
+						document.documentElement.dataset.heroAnimationComplete = "true";
+					}
+				} catch {
+					document.documentElement.dataset.heroSeen = "false";
+				}
+			</script>
+		)}
 	</head>
 	<body class="bg-[#edddd9]">
-		<Header />
+		<Header hiddenUntilHeroEnd={hideHeaderUntilHeroEnd} />
 		<slot />
 	</body>
 </html>

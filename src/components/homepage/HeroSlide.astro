@@ -1,9 +1,13 @@
 ---
 import heroAnimation from "../../assets/animations/hero-animation.json";
+import LogoLong from "../../assets/logo_long.svg";
 ---
 
 <section class="slide-shell snap-start">
   <div class="slide-panel flex items-center justify-center bg-[#EDDDD9]">
+    <div class="hero-logo w-full" aria-hidden="true">
+      <LogoLong class="h-full w-full object-contain" />
+    </div>
     <div
       class="hero-animation w-full"
       data-animation={JSON.stringify(heroAnimation)}
@@ -20,6 +24,11 @@ import heroAnimation from "../../assets/animations/hero-animation.json";
       return;
     }
 
+    if (document.documentElement.dataset.heroSeen === "true") {
+      document.documentElement.dataset.heroAnimationComplete = "true";
+      return;
+    }
+
     const rawAnimation = container.dataset.animation;
     if (!rawAnimation) {
       return;
@@ -27,22 +36,45 @@ import heroAnimation from "../../assets/animations/hero-animation.json";
 
     container.dataset.lottieMounted = "true";
 
-    lottie.loadAnimation({
+    const animation = lottie.loadAnimation({
       container,
       renderer: "svg",
-      loop: true,
+      loop: false,
       autoplay: true,
       animationData: JSON.parse(rawAnimation),
       rendererSettings: {
         preserveAspectRatio: "xMidYMid meet",
       },
     });
+
+    animation.addEventListener("complete", () => {
+      try {
+        window.localStorage.setItem("homepage-hero-animation-seen", "true");
+      } catch {}
+
+      document.documentElement.dataset.heroSeen = "true";
+      document.documentElement.dataset.heroAnimationComplete = "true";
+      window.dispatchEvent(new CustomEvent("hero-animation-complete"));
+    });
   });
 </script>
 
 <style>
+  .hero-logo {
+    display: none;
+    width: 100%;
+  }
+
   .hero-animation {
     width: 100%;
+  }
+
+  :global(html[data-hero-seen="true"]) .hero-logo {
+    display: block;
+  }
+
+  :global(html[data-hero-seen="true"]) .hero-animation {
+    display: none;
   }
 
   .hero-animation :global(svg) {

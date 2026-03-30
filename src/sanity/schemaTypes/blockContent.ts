@@ -38,6 +38,7 @@ export const blockContentType = defineType({
         decorators: [
           { title: "Strong", value: "strong" },
           { title: "Emphasis", value: "em" },
+          { title: "Logo", value: "logo" },
         ],
         // Annotations can be any object structure – e.g. a link or a footnote.
         annotations: [

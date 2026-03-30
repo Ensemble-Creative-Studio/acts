@@ -11,6 +11,7 @@ import type {
 import Layout from "../layouts/Layout.astro";
 import { getHomepage } from "../sanity/lib/sanity-utils";
 
+const heroSeenStorageKey = "homepage-hero-animation-seen";
 const homepage = await getHomepage();
 
 const galleries = (homepage?.galleries ?? []).slice(0, 2);
@@ -21,6 +22,8 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
   title={homepage?.seo?.seoTitle}
   description={homepage?.seo?.seoDescription}
   image={homepage?.seo?.seoImage}
+  hideHeaderUntilHeroEnd={true}
+  heroSeenStorageKey={heroSeenStorageKey}
 >
   <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory bg-stone-100 text-neutral-950">
     <HeroSlide />
@@ -213,4 +216,25 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
 
     previousIsMobileGallery = event.matches;
   });
+
+  const deferredHeader = document.querySelector(
+    '[data-hidden-until-hero-end="true"]',
+  ) as HTMLElement | null;
+
+  if (deferredHeader) {
+    const revealDeferredHeader = () => {
+      deferredHeader.dataset.headerVisible = "true";
+      deferredHeader.classList.remove("opacity-0");
+      window.removeEventListener("hero-animation-complete", revealDeferredHeader);
+    };
+
+    if (
+      document.documentElement.dataset.heroSeen === "true" ||
+      document.documentElement.dataset.heroAnimationComplete === "true"
+    ) {
+      revealDeferredHeader();
+    } else {
+      window.addEventListener("hero-animation-complete", revealDeferredHeader, { once: true });
+    }
+  }
 </script>
