@@ -14,6 +14,7 @@ export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
         _type,
         name,
         color,
+        titleColor,
         credits[]{
           _key,
           jobs,
@@ -123,6 +124,7 @@ export const eventsQuery = `*[_type == "events" && _id == "events"][0]{
         _type,
         name,
         color,
+        titleColor,
         credits[]{
           _key,
           jobs,

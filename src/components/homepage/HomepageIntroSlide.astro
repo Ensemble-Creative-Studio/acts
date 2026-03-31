@@ -1,4 +1,5 @@
 ---
+import LogoText from "../LogoText.astro";
 import type { PresentationSlide } from "./types";
 
 type Props = {
@@ -16,7 +17,7 @@ const introBackground = slide.color || "#262626";
   >
     <div class="mx-auto max-w-5xl text-center">
       <h2 class="text-balance text-5xl font-semibold uppercase leading-none md:text-7xl font-avant-garde">
-        {slide.title || "Featured Work"}
+        <LogoText text={slide.title} fallback="Featured Work" />
       </h2>
       {slide.subtitle ? (
         <p class="mx-auto mt-6 max-w-2xl text-pretty text-xl font-medium uppercase sm:text-base font-avant-garde">

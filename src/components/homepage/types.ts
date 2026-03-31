@@ -71,6 +71,7 @@ export type Project = {
   _type: "project";
   name?: string;
   color?: string;
+  titleColor?: string;
   credits?: ProjectCredit[];
   mainMedia?: ProjectSelectableMedia;
   gallery?: ProjectGalleryItem[];

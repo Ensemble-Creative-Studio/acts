@@ -29,7 +29,8 @@ const homepageGalleryPresentationSlideType = defineType({
       name: "title",
       title: "Title",
       type: "string",
-      description: "Optional heading shown at the start of this gallery.",
+      description:
+        "Optional heading shown at the start of this gallery. Use [[logo]] where the ACTS logo should appear.",
     }),
     defineField({
       name: "subtitle",

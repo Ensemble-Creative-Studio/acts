@@ -1,0 +1,47 @@
+---
+import Logo from "../assets/logo.svg";
+
+type Props = {
+  text?: string;
+  fallback?: string;
+  token?: string;
+  logoClass?: string;
+};
+
+const {
+  text,
+  fallback = "",
+  token = "[[logo]]",
+  logoClass = "h-[0.78em] w-auto",
+} = Astro.props;
+
+const resolvedText = text?.trim() ? text : fallback;
+const parts = resolvedText.split(token);
+const hasLogoToken = parts.length > 1;
+const trailingWhitespaceRegex = /(\s+)$/;
+---
+
+{
+  hasLogoToken ? (
+    parts.map((part, index) => {
+      if (index >= parts.length - 1) {
+        return part;
+      }
+
+      const trailingWhitespace = part.match(trailingWhitespaceRegex)?.[1] ?? "";
+      const textBeforeLogo = trailingWhitespace ? part.slice(0, -trailingWhitespace.length) : part;
+
+      return (
+        <>
+          {textBeforeLogo}
+          <span class="inline-flex whitespace-nowrap items-baseline">
+            {trailingWhitespace ? "\u00A0" : null}
+            <Logo class={logoClass} aria-label="ACTS" />
+          </span>
+        </>
+      );
+    })
+  ) : (
+    resolvedText
+  )
+}

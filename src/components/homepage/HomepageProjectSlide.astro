@@ -67,7 +67,7 @@ const mediaCount = desktopMaxState;
 const initialMediaCount = `1/${mediaCount}`;
 const arrowCursorLeftUrl = `data:image/svg+xml,${encodeURIComponent(arrowCursorLeftRaw)}`;
 const arrowCursorRightUrl = `data:image/svg+xml,${encodeURIComponent(arrowCursorRightRaw)}`;
-const isMainMediaVideo = slide.mainMedia?.mediaType === "video";
+const projectTitleColor = slide.titleColor || "#000000";
 ---
 
 <section class="slide-shell snap-start">
@@ -271,7 +271,7 @@ const isMainMediaVideo = slide.mainMedia?.mediaType === "video";
                       class="flex h-full w-full items-center justify-start"
                       style={`background-color: ${projectBackground};`}
                     >
-                      <div class="relative z-40 h-full w-auto overflow-hidden md:mr-auto md:h-[64dvh] md:max-h-[64dvh]">
+                      <div class="relative z-40 h-full w-auto overflow-hidden md:mr-auto md:h-[70dvh] md:max-h-[70dvh]">
                         {leftMedia?.mediaType === "video" && leftPlaybackId ? (
                           <MuxVideoPlayer
                             client:load
@@ -311,7 +311,7 @@ const isMainMediaVideo = slide.mainMedia?.mediaType === "video";
                   <div
                     class={`relative overflow-hidden ${
                       leftIsLarge
-                        ? "z-40 h-[50dvh] w-full md:ml-auto md:h-[64dvh] md:max-h-[64dvh] md:w-auto"
+                        ? "z-40 h-[50dvh] w-full md:ml-auto md:h-[70dvh] md:max-h-[70dvh] md:w-auto"
                         : "z-40 h-[50dvh] w-full md:h-full md:w-auto"
                     }`}
                   >
@@ -453,12 +453,10 @@ const isMainMediaVideo = slide.mainMedia?.mediaType === "video";
       class="pointer-events-none absolute inset-0 z-50 flex items-center justify-center px-4 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0"
       data-project-title
       data-visible="true"
-      style={isMainMediaVideo ? "mix-blend-mode: difference;" : undefined}
     >
       <h2
-        class={`absolute text-balance font-avant-garde text-center text-5xl md:text-7xl font-semibold uppercase leading-none ${
-          isMainMediaVideo ? "text-white" : "text-black"
-        }`}
+        class="absolute text-balance font-avant-garde text-center text-5xl md:text-7xl font-semibold uppercase leading-none"
+        style={`color: ${projectTitleColor};`}
       >
         {slide.name || "Untitled Project"}
       </h2>
@@ -468,22 +466,16 @@ const isMainMediaVideo = slide.mainMedia?.mediaType === "video";
     <div
       class="pointer-events-none absolute inset-x-5 bottom-5 z-50 flex items-center justify-between gap-x-6 uppercase font-avant-garde font-medium text-black sm:inset-x-6 sm:bottom-6"
     >
-      <div class="flex min-w-0 flex-col gap-y-0.5 md:flex-row md:flex-wrap md:items-baseline md:gap-x-3 md:gap-y-0">
-        <p class="text-sm md:text-2xl">{slide.name}</p>
-        {slide.credits?.length ? (
-          <div class="flex min-w-0 flex-col gap-y-0.5 md:flex-row md:flex-wrap md:items-baseline md:gap-x-3 md:gap-y-0">
-            {slide.credits.map((credit) => (
+      <div class="flex min-w-0 flex-col md:flex-row md:flex-wrap md:items-baseline md:gap-x-3 md:gap-y-0">
+        <p class="text-xl md:text-2xl">{slide.name}</p>
+          <div class="flex min-w-0 flex-col md:flex-row md:flex-wrap md:items-baseline md:gap-x-3 md:gap-y-0">
+            {slide.credits?.map((credit) => (
               <p class="flex items-baseline gap-x-2">
-                <span class="text-[8px] md:text-sm">{credit.jobs}</span>
-                <span class="text-sm md:text-xl">{credit.name}</span>
+                <span class="text-xs md:text-sm">{credit.jobs}</span>
+                <span class="text-base md:text-xl">{credit.name}</span>
               </p>
             ))}
           </div>
-        ) : (
-          <p class="text-base font-semibold uppercase leading-none text-white">
-            {slide.mainMedia?.mediaType === "video" ? "Video project" : slide.name || "Project"}
-          </p>
-        )}
       </div>
 
       <p class="hidden md:block shrink-0 text-3xl tabular-nums sm:text-3xl" data-media-counter>{initialMediaCount}</p>

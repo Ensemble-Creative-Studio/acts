@@ -281,6 +281,15 @@ export const projectType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "titleColor",
+      title: "Title color",
+      type: "colorInput",
+      group: "content",
+      description: "Choose the color of the large project title overlay.",
+      initialValue: "#000000",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "credits",
       title: "Credits",
       type: "array",
