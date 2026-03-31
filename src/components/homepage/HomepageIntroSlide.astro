@@ -10,7 +10,7 @@ const { slide } = Astro.props;
 const introBackground = slide.color || "#262626";
 ---
 
-<section class="slide-shell snap-start">
+<section class="slide-shell snap-start" data-page-background={introBackground}>
   <article
     class="slide-panel flex items-center justify-center px-6 py-12 text-black"
     style={`background-color: ${introBackground};`}

@@ -21,8 +21,8 @@ const slides = galleries.flatMap((gallery: any) => gallery.slides);
   description={eventsData?.seo?.seoDescription}
   image={eventsData?.seo?.seoImage}
 >
-  <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory bg-stone-100 text-neutral-950">
-    <section class="slide-shell snap-start">
+  <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory text-neutral-950">
+    <section class="slide-shell snap-start" data-page-background="#EDDDD9">
       <div class="grid grid-cols-12 slide-panel items-center bg-[#EDDDD9] px-6">
         <div class="col-span-10 portable-text font-avant-garde text-2xl md:text-6xl text-black font-medium tracking-[-1.2px]">
           {eventsData?.introduction && <PortableText portableText={eventsData.introduction} />}
@@ -39,7 +39,7 @@ const slides = galleries.flatMap((gallery: any) => gallery.slides);
         ),
       )
     ) : (
-      <section class="flex min-h-dvh snap-start items-center justify-center bg-stone-100 px-6">
+      <section class="flex min-h-dvh snap-start items-center justify-center px-6" data-page-background="#EDDDD9">
         <div class="max-w-md text-center">
           <p class="text-pretty text-base text-neutral-600">
             Ajoutez des galleries dans Sanity pour remplir la page événements.
@@ -61,6 +61,8 @@ const slides = galleries.flatMap((gallery: any) => gallery.slides);
 </style>
 
 <script>
+  import { initPageBackgroundColorSync } from "../scripts/page-backgroundcolor-sync";
+
   const mobileGalleryMediaQuery = window.matchMedia("(max-width: 767px)");
 
   const getIsMobileGallery = () => mobileGalleryMediaQuery.matches;
@@ -212,4 +214,5 @@ const slides = galleries.flatMap((gallery: any) => gallery.slides);
 
     previousIsMobileGallery = event.matches;
   });
+  initPageBackgroundColorSync();
 </script>

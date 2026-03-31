@@ -52,7 +52,7 @@ const {
 			</script>
 		)}
 	</head>
-	<body class="bg-[#edddd9]">
+	<body>
 		<Header hiddenUntilHeroEnd={hideHeaderUntilHeroEnd} />
 		<slot />
 	</body>
@@ -64,5 +64,14 @@ const {
 		margin: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	html {
+		--page-background: #edddd9;
+	}
+
+	body {
+		background-color: var(--page-background);
+		transition: background-color 220ms ease-out;
 	}
 </style>
