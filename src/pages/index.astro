@@ -9,13 +9,16 @@ import type {
   Project,
 } from "../components/homepage/types";
 import Layout from "../layouts/Layout.astro";
-import { getHomepage } from "../sanity/lib/sanity-utils";
+import { getEvents, getHomepage } from "../sanity/lib/sanity-utils";
 
 const heroSeenStorageKey = "homepage-hero-animation-seen";
 const homepage = await getHomepage();
+const eventsData = await getEvents();
 
 const galleries = (homepage?.galleries ?? []).slice(0, 2);
 const slides = galleries.flatMap((gallery) => gallery.slides);
+const eventGalleries = (eventsData?.galleries ?? []).slice(0, 2);
+const eventSlides = eventGalleries.flatMap((gallery: any) => gallery.slides);
 ---
 
 <Layout
@@ -53,6 +56,27 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
         </div>
       </section>
     )}
+
+    {eventsData?.introduction && (
+      <section class="slide-shell snap-start" data-page-background="#EDDDD9">
+        <div class="slide-panel grid grid-cols-12 items-center bg-[#EDDDD9] px-6">
+          <div class="col-span-12 md:col-span-9 portable-text font-avant-garde text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.5rem] 2xl:text-6xl text-black font-medium tracking-[-1.2px]">
+            <PortableText portableText={eventsData.introduction} />
+          </div>
+        </div>
+      </section>
+    )}
+
+    {eventSlides.length ? (
+      eventSlides.map((slide: any) =>
+        slide._type === "eventsGalleryPresentationSlide" ? (
+          <HomepageIntroSlide slide={slide as PresentationSlide} />
+        ) : (
+          <HomepageProjectSlide slide={slide as Project} />
+        ),
+      )
+    ) : null}
+
     <FooterSlide />
   </main>
 </Layout>
