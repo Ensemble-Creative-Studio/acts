@@ -1,9 +1,20 @@
 ---
 import LogoLong from "../../assets/logo_long.svg";
+import LogoText from "../LogoText.astro";
+import { getFooter } from "../../sanity/lib/sanity-utils";
+
+const footerData = await getFooter();
 ---
 
 <section class="slide-shell snap-start" data-page-background="#EDDDD9">
   <div class="slide-panel relative block bg-[#EDDDD9]">
+    {footerData?.phrase && (
+      <div class="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+        <p class="max-w-[18ch] font-avant-garde font-medium tracking-[-0.04em] text-black text-5xl md:text-7xl">
+          <LogoText text={footerData.phrase} logoClass="h-[0.72em] w-auto" />
+        </p>
+      </div>
+    )}
     <div class="absolute bottom-0 left-0 w-screen">
       <LogoLong class="h-full w-full object-contain" />
     </div>

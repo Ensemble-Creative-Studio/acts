@@ -17,8 +17,6 @@ const eventsData = await getEvents();
 
 const galleries = (homepage?.galleries ?? []).slice(0, 2);
 const slides = galleries.flatMap((gallery) => gallery.slides);
-const eventGalleries = (eventsData?.galleries ?? []).slice(0, 2);
-const eventSlides = eventGalleries.flatMap((gallery: any) => gallery.slides);
 ---
 
 <Layout
@@ -66,16 +64,6 @@ const eventSlides = eventGalleries.flatMap((gallery: any) => gallery.slides);
         </div>
       </section>
     )}
-
-    {eventSlides.length ? (
-      eventSlides.map((slide: any) =>
-        slide._type === "eventsGalleryPresentationSlide" ? (
-          <HomepageIntroSlide slide={slide as PresentationSlide} />
-        ) : (
-          <HomepageProjectSlide slide={slide as Project} />
-        ),
-      )
-    ) : null}
 
     <FooterSlide />
   </main>

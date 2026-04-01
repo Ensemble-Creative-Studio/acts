@@ -231,3 +231,7 @@ export const infoQuery = `*[_type == "info" && _id == "info"][0]{
   adresse,
   instagram
 }`;
+
+export const footerQuery = `*[_type == "footer" && _id == "footer"][0]{
+  phrase
+}`;

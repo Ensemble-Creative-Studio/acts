@@ -1,5 +1,6 @@
 import type { SchemaTypeDefinition } from "sanity";
 import { blockContentType } from "./blockContent";
+import { footerSchemaTypes } from "./footer";
 import { homepageSchemaTypes } from "./homepage";
 import { eventsSchemaTypes } from "./events";
 import { infoSchemaTypes } from "./info";
@@ -12,6 +13,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     blockContentType,
     optionType,
+    ...footerSchemaTypes,
     ...homepageSchemaTypes,
     ...eventsSchemaTypes,
     ...infoSchemaTypes,
