@@ -100,7 +100,7 @@ const projectTitleColor = slide.titleColor || "#000000";
       <div
         class={`relative flex items-center justify-center ${
           slide.mainMedia?.mediaType === "video"
-            ? "z-40 max-h-[72dvh] w-auto max-w-[min(82vw,72rem)] overflow-hidden"
+            ? "z-[120] max-h-[72dvh] w-auto max-w-[min(82vw,72rem)] overflow-hidden"
             : "max-h-[72dvh] min-w-72 md:min-w-200"
         }`}
       >
@@ -183,7 +183,7 @@ const projectTitleColor = slide.titleColor || "#000000";
               data-gallery-mobile-state={firstMobileStateValue}
               data-visible="false"
             >
-              <div class="relative z-40 flex max-h-[72dvh] w-full max-w-[min(84vw,78rem)] items-center justify-center">
+              <div class="relative z-[120] flex max-h-[72dvh] w-full max-w-[min(84vw,78rem)] items-center justify-center">
                 {playbackId ? (
                   <MuxVideoPlayer
                     client:load
@@ -246,7 +246,7 @@ const projectTitleColor = slide.titleColor || "#000000";
                   }`}
                 >
                   {leftIsLarge ? (
-                    <div class="relative z-40 flex h-full w-full items-center justify-start">
+                    <div class="relative z-[120] flex h-full w-full items-center justify-start">
                       {leftMedia?.mediaType === "video" && leftPlaybackId ? (
                         <MuxVideoPlayer
                           client:load
@@ -276,7 +276,7 @@ const projectTitleColor = slide.titleColor || "#000000";
                       class="flex h-full w-full items-center justify-start"
                       style={`background-color: ${projectBackground};`}
                     >
-                      <div class="relative z-40 h-full w-auto overflow-hidden md:mr-auto md:h-[70dvh] md:max-h-[70dvh]">
+                      <div class="relative z-[120] h-full w-auto overflow-hidden md:mr-auto md:h-[70dvh] md:max-h-[70dvh]">
                         {leftMedia?.mediaType === "video" && leftPlaybackId ? (
                           <MuxVideoPlayer
                             client:load
@@ -316,8 +316,8 @@ const projectTitleColor = slide.titleColor || "#000000";
                   <div
                     class={`relative overflow-hidden ${
                       leftIsLarge
-                        ? "z-40 h-[50dvh] w-full md:ml-auto md:h-[70dvh] md:max-h-[70dvh] md:w-auto"
-                        : "z-40 h-[50dvh] w-full md:h-full md:w-auto"
+                        ? "z-[120] h-[50dvh] w-full md:ml-auto md:h-[70dvh] md:max-h-[70dvh] md:w-auto"
+                        : "z-[120] h-[50dvh] w-full md:h-full md:w-auto"
                     }`}
                   >
                     {leftIsLarge ? (
@@ -383,7 +383,7 @@ const projectTitleColor = slide.titleColor || "#000000";
                 class="flex h-full w-full items-center justify-center px-5 py-8"
                 style={`background-color: ${projectBackground};`}
               >
-                <div class="relative z-40 flex h-full w-full items-center justify-center overflow-hidden">
+                <div class="relative z-[120] flex h-full w-full items-center justify-center overflow-hidden">
                   {leftMedia?.mediaType === "video" && leftPlaybackId ? (
                     <MuxVideoPlayer
                       client:load
@@ -422,7 +422,7 @@ const projectTitleColor = slide.titleColor || "#000000";
                 class="flex h-full w-full items-center justify-center px-5 py-8"
               style={`background-color: ${projectBackground};`}
             >
-                <div class="relative z-40 flex h-full w-full items-center justify-center overflow-hidden">
+                <div class="relative z-[120] flex h-full w-full items-center justify-center overflow-hidden">
                   {rightMedia?.mediaType === "video" && rightPlaybackId ? (
                     <MuxVideoPlayer
                       client:load
@@ -455,7 +455,7 @@ const projectTitleColor = slide.titleColor || "#000000";
     </div>
 
     <div
-      class="pointer-events-none absolute inset-0 z-50 flex items-center justify-center px-4 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0"
+      class="pointer-events-none absolute inset-0 z-[130] flex items-center justify-center px-4 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0"
       data-project-title
       data-visible="true"
       style={isMainMediaVideo ? "mix-blend-mode: difference;" : undefined}
