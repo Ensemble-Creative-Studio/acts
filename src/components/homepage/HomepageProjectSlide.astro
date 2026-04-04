@@ -84,9 +84,21 @@ const projectTitleColor = slide.titleColor || "#000000";
     style={`background-color: ${projectBackground}; --project-cursor-left: url("${arrowCursorLeftUrl}"); --project-cursor-right: url("${arrowCursorRightUrl}");`}
   >
     <div class="relative flex h-full items-center justify-center">
-    <div class="absolute inset-0 z-30 hidden md:block" aria-hidden="true">
-      <div class="project-card-cursor-zone project-card-cursor-zone--left absolute inset-y-0 left-0 w-1/2"></div>
-      <div class="project-card-cursor-zone project-card-cursor-zone--right absolute inset-y-0 right-0 w-1/2"></div>
+    <div class="absolute inset-0 z-[45]" aria-hidden="true">
+      <button
+        type="button"
+        class="project-card-cursor-zone project-card-cursor-zone--left absolute inset-y-0 left-0 m-0 w-1/2 appearance-none border-0 bg-transparent p-0"
+        data-project-card-nav="prev"
+        tabindex="-1"
+        aria-hidden="true"
+      ></button>
+      <button
+        type="button"
+        class="project-card-cursor-zone project-card-cursor-zone--right absolute inset-y-0 right-0 m-0 w-1/2 appearance-none border-0 bg-transparent p-0"
+        data-project-card-nav="next"
+        tabindex="-1"
+        aria-hidden="true"
+      ></button>
     </div>
     <div
       class="relative flex w-full max-w-7xl items-center justify-center px-5 py-8 opacity-100 transition-opacity duration-300 ease-out data-[visible='false']:opacity-0 sm:px-8 md:px-12"

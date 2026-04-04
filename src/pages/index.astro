@@ -185,20 +185,49 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
     updateProjectCard(card, nextIsMobile);
   };
 
+  const handleProjectCardNavigation = (card: HTMLElement, direction: "prev" | "next") => {
+    if (direction === "next") {
+      advanceProjectCard(card);
+      return;
+    }
+
+    retreatProjectCard(card);
+  };
+
   document.querySelectorAll("[data-project-card]").forEach((el) => {
     const card = el as HTMLElement;
     updateProjectCard(card);
 
-    card.addEventListener("click", (event) => {
-      const bounds = card.getBoundingClientRect();
-      const clickedOnRightHalf = event.clientX >= bounds.left + bounds.width / 2;
+    const navZones = Array.from(
+      card.querySelectorAll("[data-project-card-nav]"),
+    ) as HTMLButtonElement[];
 
-      if (clickedOnRightHalf) {
-        advanceProjectCard(card);
-        return;
-      }
+    navZones.forEach((zone) => {
+      const direction = zone.dataset.projectCardNav === "next" ? "next" : "prev";
+      let lastTouchNavigationAt = 0;
 
-      retreatProjectCard(card);
+      zone.addEventListener("click", (event) => {
+        if (Date.now() - lastTouchNavigationAt < 500) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        handleProjectCardNavigation(card, direction);
+      });
+
+      zone.addEventListener("pointerup", (event) => {
+        if (event.pointerType !== "touch") {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        lastTouchNavigationAt = Date.now();
+        handleProjectCardNavigation(card, direction);
+      });
     });
 
     card.addEventListener("keydown", (event) => {
