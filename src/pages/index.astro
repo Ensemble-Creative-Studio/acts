@@ -190,11 +190,15 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
     updateProjectCard(card);
 
     card.addEventListener("click", (event) => {
-      const target = event.target;
-      if (
-        target instanceof HTMLElement &&
-        target.closest("[data-player-controls='true']")
-      ) {
+      const clickedInsidePlayerControls = event
+        .composedPath()
+        .some(
+          (node) =>
+            node instanceof HTMLElement &&
+            node.dataset.playerControls === "true",
+        );
+
+      if (clickedInsidePlayerControls) {
         return;
       }
 
