@@ -190,6 +190,14 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
     updateProjectCard(card);
 
     card.addEventListener("click", (event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target.closest("[data-player-controls='true']")
+      ) {
+        return;
+      }
+
       const bounds = card.getBoundingClientRect();
       const clickedOnRightHalf = event.clientX >= bounds.left + bounds.width / 2;
 

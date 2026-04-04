@@ -534,6 +534,7 @@ export default function MuxVideoPlayer({
           <div className="grid w-full grid-cols-10 gap-6">
             <div
               className="col-span-10 col-start-1 my-3 flex items-center gap-3 px-4 font-avant-garde text-xs text-white md:col-span-6 md:col-start-3 md:px-0"
+              data-player-controls="true"
               onClick={stopPropagation}
             >
               <button type="button" onClick={handlePlayPause}>
