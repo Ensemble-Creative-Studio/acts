@@ -99,6 +99,7 @@ export default function MuxVideoPlayer({
   const hideControlsTimeoutRef = useRef<ReturnType<
     typeof window.setTimeout
   > | null>(null);
+  const userMutedPreferenceRef = useRef<boolean | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -170,13 +171,21 @@ export default function MuxVideoPlayer({
         return;
       }
 
-      media.muted = true;
-      player.muted = true;
-      player.defaultMuted = true;
-      player.playsInline = true;
-      setIsMuted(media.muted);
+      const card = player.closest("[data-project-card]") as HTMLElement | null;
+      const isMainMedia = Boolean(player.closest("[data-main-media]"));
+      const state = Number(card?.dataset.state || "0");
+      const isActive = isInViewport && shouldPlay(player);
+      const shouldAutoEnableSound = isMainMedia ? state >= 1 : isActive;
+      const nextMuted =
+        userMutedPreferenceRef.current ?? !shouldAutoEnableSound;
 
-      if (isInViewport && shouldPlay(player)) {
+      media.muted = nextMuted;
+      player.muted = nextMuted;
+      player.defaultMuted = nextMuted;
+      player.playsInline = true;
+      setIsMuted(nextMuted);
+
+      if (isActive) {
         media.play().catch(() => {});
       } else {
         media.pause();
@@ -326,12 +335,16 @@ export default function MuxVideoPlayer({
   };
 
   const handleMute = () => {
-    const media = videoRef.current?.media;
-    if (!media) {
+    const player = videoRef.current;
+    const media = player?.media;
+    if (!player || !media) {
       return;
     }
 
     media.muted = !media.muted;
+    player.muted = media.muted;
+    player.defaultMuted = media.muted;
+    userMutedPreferenceRef.current = media.muted;
     setIsMuted(media.muted);
     revealControls();
   };
