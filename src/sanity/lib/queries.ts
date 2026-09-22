@@ -1,3 +1,68 @@
+const projectMediaFragment = `
+  mediaType,
+  caption,
+  image{
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    },
+    alt
+  },
+  video{
+    asset->{
+      playbackId
+    }
+  }
+`;
+
+const projectFieldsFragment = `
+  _id,
+  _type,
+  name,
+  slug,
+  color,
+  titleColor,
+  credits[]{
+    _key,
+    jobs,
+    name
+  },
+  mainMedia{
+    ${projectMediaFragment}
+  },
+  gallery[]{
+    ...,
+    image{
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      },
+      alt
+    },
+    leftMedia{
+      ${projectMediaFragment}
+    },
+    rightMedia{
+      ${projectMediaFragment}
+    },
+    video{
+      asset->{
+        playbackId
+      }
+    }
+  }
+`;
+
 export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
   seo {
     seoTitle,
@@ -10,99 +75,7 @@ export const homepageQuery = `*[_type == "homepage" && _id == "homepage"][0]{
     slides[]{
       ...,
       _type == "reference" => @->{
-        _id,
-        _type,
-        name,
-        color,
-        titleColor,
-        credits[]{
-          _key,
-          jobs,
-          name
-        },
-        mainMedia{
-          mediaType,
-          caption,
-          image{
-            asset->{
-              url,
-              metadata{
-                dimensions{
-                  width,
-                  height
-                }
-              }
-            },
-            alt
-          },
-          video{
-            asset->{
-              playbackId
-            }
-          }
-        },
-        gallery[]{
-          ...,
-          image{
-            asset->{
-              url,
-              metadata{
-                dimensions{
-                  width,
-                  height
-                }
-              }
-            },
-            alt
-          },
-          leftMedia{
-            mediaType,
-            caption,
-            image{
-              asset->{
-                url,
-                metadata{
-                  dimensions{
-                    width,
-                    height
-                  }
-                }
-              },
-              alt
-            },
-            video{
-              asset->{
-                playbackId
-              }
-            }
-          },
-          rightMedia{
-            mediaType,
-            caption,
-            image{
-              asset->{
-                url,
-                metadata{
-                  dimensions{
-                    width,
-                    height
-                  }
-                }
-              },
-              alt
-            },
-            video{
-              asset->{
-                playbackId
-              }
-            }
-          },
-          video{
-            asset->{
-              playbackId
-            }
-          }
-        }
+        ${projectFieldsFragment}
       }
     }
   }
@@ -120,102 +93,14 @@ export const eventsQuery = `*[_type == "events" && _id == "events"][0]{
     slides[]{
       ...,
       _type == "reference" => @->{
-        _id,
-        _type,
-        name,
-        color,
-        titleColor,
-        credits[]{
-          _key,
-          jobs,
-          name
-        },
-        mainMedia{
-          mediaType,
-          caption,
-          image{
-            asset->{
-              url,
-              metadata{
-                dimensions{
-                  width,
-                  height
-                }
-              }
-            },
-            alt
-          },
-          video{
-            asset->{
-              playbackId
-            }
-          }
-        },
-        gallery[]{
-          ...,
-          image{
-            asset->{
-              url,
-              metadata{
-                dimensions{
-                  width,
-                  height
-                }
-              }
-            },
-            alt
-          },
-          leftMedia{
-            mediaType,
-            caption,
-            image{
-              asset->{
-                url,
-                metadata{
-                  dimensions{
-                    width,
-                    height
-                  }
-                }
-              },
-              alt
-            },
-            video{
-              asset->{
-                playbackId
-              }
-            }
-          },
-          rightMedia{
-            mediaType,
-            caption,
-            image{
-              asset->{
-                url,
-                metadata{
-                  dimensions{
-                    width,
-                    height
-                  }
-                }
-              },
-              alt
-            },
-            video{
-              asset->{
-                playbackId
-              }
-            }
-          },
-          video{
-            asset->{
-              playbackId
-            }
-          }
-        }
+        ${projectFieldsFragment}
       }
     }
   }
+}`;
+
+export const projectBySlugQuery = `*[_type == "project" && slug.current == $slug][0]{
+  ${projectFieldsFragment}
 }`;
 
 export const infoQuery = `*[_type == "info" && _id == "info"][0]{

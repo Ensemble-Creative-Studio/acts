@@ -273,6 +273,19 @@ export const projectType = defineType({
       validation: (Rule) => Rule.required().min(2),
     }),
     defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      group: "content",
+      description:
+        "Used for this project's preview URL, e.g. /projects/my-project.",
+      options: {
+        source: "name",
+        maxLength: 96,
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "color",
       title: "Color",
       type: "colorInput",

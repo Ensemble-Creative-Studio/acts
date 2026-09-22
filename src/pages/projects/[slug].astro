@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import HomepageProjectSlide from "../../components/homepage/HomepageProjectSlide.astro";
+import { getProjectBySlug } from "../../sanity/lib/sanity-utils";
+import type { Project } from "../../components/homepage/types";
+
+const { slug } = Astro.params;
+const project = slug ? await getProjectBySlug(slug, Astro.locals.preview) : null;
+---
+
+<Layout title={project?.name ? `${project.name} — Acts` : "Projet introuvable"}>
+  <main class="h-dvh overflow-y-auto overscroll-y-contain text-neutral-950">
+    {project ? (
+      <HomepageProjectSlide slide={project as Project} />
+    ) : (
+      <section
+        class="flex min-h-dvh items-center justify-center px-6"
+        data-page-background="#EDDDD9"
+      >
+        <div class="max-w-md text-center">
+          <p class="text-pretty text-base text-neutral-600">
+            Projet introuvable. Vérifie le slug, ou publie/enregistre le projet dans Sanity.
+          </p>
+        </div>
+      </section>
+    )}
+  </main>
+</Layout>
+
+<script>
+  import { initPageBackgroundColorSync } from "../../scripts/page-backgroundcolor-sync";
+  import { initProjectCardInteractions } from "../../scripts/project-card-interactions";
+
+  initProjectCardInteractions();
+  initPageBackgroundColorSync();
+</script>

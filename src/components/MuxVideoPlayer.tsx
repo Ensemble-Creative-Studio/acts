@@ -176,8 +176,9 @@ export default function MuxVideoPlayer({
       const state = Number(card?.dataset.state || "0");
       const isActive = isInViewport && shouldPlay(player);
       const shouldAutoEnableSound = isMainMedia ? state >= 1 : isActive;
-      const nextMuted =
-        userMutedPreferenceRef.current ?? !shouldAutoEnableSound;
+      const nextMuted = !isActive
+        ? true
+        : (userMutedPreferenceRef.current ?? !shouldAutoEnableSound);
 
       media.muted = nextMuted;
       player.muted = nextMuted;

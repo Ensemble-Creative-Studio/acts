@@ -70,6 +70,7 @@ export type Project = {
   _id: string;
   _type: "project";
   name?: string;
+  slug?: { current?: string };
   color?: string;
   titleColor?: string;
   credits?: ProjectCredit[];

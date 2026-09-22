@@ -32,5 +32,12 @@
     "sanity-plugin-mux-input": "^2.17.0",
     "styled-components": "^6.3.11",
     "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "vite": "^7.3.1"
   }
 }

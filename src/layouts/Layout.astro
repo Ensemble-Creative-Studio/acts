@@ -1,5 +1,6 @@
 ---
 import Header from "../components/Header.astro";
+import PreviewBanner from "../components/PreviewBanner.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -17,6 +18,8 @@ const {
 	hideHeaderUntilHeroEnd = false,
 	heroSeenStorageKey,
 } = Astro.props;
+
+const isPreview = Astro.locals.preview;
 ---
 
 <!doctype html>
@@ -53,6 +56,7 @@ const {
 		)}
 	</head>
 	<body>
+		{isPreview && <PreviewBanner />}
 		<Header hiddenUntilHeroEnd={hideHeaderUntilHeroEnd} />
 		<slot />
 	</body>

@@ -5,7 +5,7 @@ import PortableText from '../components/PortableText.astro';
 import LogoLong from '../assets/logo_long.svg';
 import InstagramIcon from '../assets/instagram.svg';
 
-const infoData = await getInfo();
+const infoData = await getInfo(Astro.locals.preview);
 ---
 
 <Layout
