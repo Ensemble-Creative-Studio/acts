@@ -1,5 +1,4 @@
 ---
-import HomepageIntroSlide from "../components/homepage/HomepageIntroSlide.astro";
 import HomepageProjectSlide from "../components/homepage/HomepageProjectSlide.astro";
 import FooterSlide from "../components/homepage/FooterSlide.astro";
 import PortableText from "../components/PortableText.astro";
@@ -10,7 +9,9 @@ import { getEvents } from "../sanity/lib/sanity-utils";
 const eventsData = await getEvents(Astro.locals.preview);
 
 const galleries = eventsData?.galleries ?? [];
-const slides = galleries.flatMap((gallery: { slides: (PresentationSlide | Project)[] }) => gallery.slides);
+const slides = galleries
+  .flatMap((gallery: { slides: (PresentationSlide | Project)[] }) => gallery.slides)
+  .filter((slide: PresentationSlide | Project) => slide._type === "project") as Project[];
 ---
 
 <Layout
@@ -28,13 +29,7 @@ const slides = galleries.flatMap((gallery: { slides: (PresentationSlide | Projec
     </section>
 
     {slides.length ? (
-      slides.map((slide) =>
-        slide._type === "eventsGalleryPresentationSlide" ? (
-          <HomepageIntroSlide slide={slide as PresentationSlide} />
-        ) : (
-          <HomepageProjectSlide slide={slide as Project} />
-        ),
-      )
+      slides.map((slide) => <HomepageProjectSlide slide={slide} />)
     ) : (
       <section
         class="flex min-h-dvh snap-start items-center justify-center px-6"
