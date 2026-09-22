@@ -4,7 +4,7 @@ type PreviewDoc = { slug?: { current?: string } } | null | undefined;
 
 const STATIC_PREVIEW_PATHS: Record<string, string> = {
   homepage: "/",
-  events: "/",
+  events: "/events",
   info: "/info",
 };
 
