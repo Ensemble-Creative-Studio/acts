@@ -80,9 +80,13 @@ const slides = galleries.flatMap((gallery) => gallery.slides);
 
 <script>
   import { initPageBackgroundColorSync } from "../scripts/page-backgroundcolor-sync";
-  import { initProjectCardInteractions } from "../scripts/project-card-interactions";
+  import {
+    initProjectCardInteractions,
+    initGlobalVideoMuteGuard,
+  } from "../scripts/project-card-interactions";
 
   initProjectCardInteractions();
+  initGlobalVideoMuteGuard();
   initPageBackgroundColorSync();
 
   const deferredHeader = document.querySelector(

@@ -29,8 +29,12 @@ const project = slug ? await getProjectBySlug(slug, Astro.locals.preview) : null
 
 <script>
   import { initPageBackgroundColorSync } from "../../scripts/page-backgroundcolor-sync";
-  import { initProjectCardInteractions } from "../../scripts/project-card-interactions";
+  import {
+    initProjectCardInteractions,
+    initGlobalVideoMuteGuard,
+  } from "../../scripts/project-card-interactions";
 
   initProjectCardInteractions();
+  initGlobalVideoMuteGuard();
   initPageBackgroundColorSync();
 </script>

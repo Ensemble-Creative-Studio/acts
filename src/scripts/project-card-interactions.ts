@@ -161,3 +161,81 @@ export function initProjectCardInteractions() {
     previousIsMobileGallery = event.matches;
   });
 }
+
+type MuxPlayerLike = HTMLElement & {
+  media?: { pause: () => void; muted: boolean } | null;
+  muted: boolean;
+  defaultMuted: boolean;
+};
+
+// Belt-and-suspenders guard: during native scroll-snap settling,
+// getBoundingClientRect() on an individual video can briefly report stale
+// geometry (compositor/main-thread lag), letting a video stay audible one
+// project past where the user actually is. This derives the active card
+// from scrollTop + each card's static offsetTop instead (immune to that
+// lag) and force-silences every video outside of it, on every scroll frame.
+export function initGlobalVideoMuteGuard() {
+  const main = document.querySelector("main");
+  if (!main) {
+    return;
+  }
+
+  const silence = (player: MuxPlayerLike) => {
+    if (player.muted && (!player.media || player.media.muted)) {
+      return;
+    }
+
+    player.media?.pause();
+    player.muted = true;
+    player.defaultMuted = true;
+    if (player.media) {
+      player.media.muted = true;
+    }
+  };
+
+  const enforce = () => {
+    const cards = Array.from(
+      document.querySelectorAll("[data-project-card]"),
+    ) as HTMLElement[];
+
+    if (!cards.length) {
+      return;
+    }
+
+    const viewportCenter = main.scrollTop + main.clientHeight / 2;
+    let activeCard: HTMLElement | null = null;
+    let bestDistance = Infinity;
+
+    cards.forEach((card) => {
+      const cardCenter = card.offsetTop + card.offsetHeight / 2;
+      const distance = Math.abs(cardCenter - viewportCenter);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        activeCard = card;
+      }
+    });
+
+    document.querySelectorAll("mux-player").forEach((el) => {
+      const player = el as MuxPlayerLike;
+      if (activeCard && activeCard.contains(player)) {
+        return;
+      }
+      silence(player);
+    });
+  };
+
+  let rafId: number | null = null;
+  const schedule = () => {
+    if (rafId !== null) {
+      return;
+    }
+    rafId = requestAnimationFrame(() => {
+      enforce();
+      rafId = null;
+    });
+  };
+
+  enforce();
+  main.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+}

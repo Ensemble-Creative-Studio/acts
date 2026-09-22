@@ -125,11 +125,51 @@ export default function MuxVideoPlayer({
     const visibilityTarget =
       (player.closest("[data-project-card]") as HTMLElement | null) ?? player;
 
+    const forceSilenceIfHidden = (visible: boolean) => {
+      if (visible) {
+        return;
+      }
+
+      const media = player.media;
+      media?.pause();
+      player.muted = true;
+      player.defaultMuted = true;
+      if (media) {
+        media.muted = true;
+      }
+    };
+
     const syncVisibility = () => {
-      setIsInViewport(isElementInViewport(visibilityTarget));
+      const visible = isElementInViewport(visibilityTarget);
+      forceSilenceIfHidden(visible);
+      setIsInViewport(visible);
     };
 
     syncVisibility();
+
+    // During native scroll-snap settling, getBoundingClientRect() can briefly
+    // report the pre-scroll layout (compositor/main-thread lag), so a single
+    // synchronous read on the scroll event can miss that the card already
+    // left the viewport. Keep re-checking on painted frames for a bit after
+    // each scroll event instead of trusting one synchronous read.
+    let rafId: number | null = null;
+    let keepCheckingUntil = 0;
+
+    const rafLoop = () => {
+      syncVisibility();
+      if (performance.now() < keepCheckingUntil) {
+        rafId = requestAnimationFrame(rafLoop);
+      } else {
+        rafId = null;
+      }
+    };
+
+    const scheduleVisibilityCheck = () => {
+      keepCheckingUntil = performance.now() + 800;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(rafLoop);
+      }
+    };
 
     if (typeof IntersectionObserver === "undefined") {
       return;
@@ -142,6 +182,7 @@ export default function MuxVideoPlayer({
           entry.isIntersecting &&
           (entry.intersectionRatio >= 0.6 ||
             isElementInViewport(visibilityTarget));
+        forceSilenceIfHidden(isVisible);
         setIsInViewport(isVisible);
       },
       {
@@ -154,14 +195,17 @@ export default function MuxVideoPlayer({
     const scrollContainer = document.querySelector("main");
 
     window.addEventListener("resize", syncVisibility);
-    scrollContainer?.addEventListener("scroll", syncVisibility, {
+    scrollContainer?.addEventListener("scroll", scheduleVisibilityCheck, {
       passive: true,
     });
 
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", syncVisibility);
-      scrollContainer?.removeEventListener("scroll", syncVisibility);
+      scrollContainer?.removeEventListener("scroll", scheduleVisibilityCheck);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
     };
   }, []);
 
