@@ -151,11 +151,17 @@ export default function MuxVideoPlayer({
 
     observer.observe(visibilityTarget);
 
+    const scrollContainer = document.querySelector("main");
+
     window.addEventListener("resize", syncVisibility);
+    scrollContainer?.addEventListener("scroll", syncVisibility, {
+      passive: true,
+    });
 
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", syncVisibility);
+      scrollContainer?.removeEventListener("scroll", syncVisibility);
     };
   }, []);
 
