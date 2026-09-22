@@ -1,15 +1,26 @@
 ---
+import HomepageIntroSlide from "../components/homepage/HomepageIntroSlide.astro";
 import HomepageProjectSlide from "../components/homepage/HomepageProjectSlide.astro";
-import type { Project } from "../components/homepage/types";
+import type { GallerySlide, PresentationSlide, Project } from "../components/homepage/types";
 import Layout from "../layouts/Layout.astro";
 import { getHomepage } from "../sanity/lib/sanity-utils";
 
 const homepage = await getHomepage(Astro.locals.preview);
 
 const galleries = homepage?.galleries ?? [];
-const projects = galleries
+
+// Keep project slides, and only the presentation/divider slides that carry
+// a subtitle (e.g. "Selected work — Projects produced by Iman Delimi..."),
+// which mark a real distinction between groups of projects. Drop the plain
+// "Project by [[logo]]" opener, which is just a homepage decoration.
+const slides = galleries
   .flatMap((gallery) => gallery.slides)
-  .filter((slide) => slide._type === "project") as Project[];
+  .filter(
+    (slide: GallerySlide) =>
+      slide._type === "project" ||
+      (slide._type === "homepageGalleryPresentationSlide" &&
+        (slide as PresentationSlide).subtitle),
+  );
 ---
 
 <Layout
@@ -18,8 +29,14 @@ const projects = galleries
   image={homepage?.seo?.seoImage}
 >
   <main class="h-dvh overflow-y-auto overscroll-y-contain snap-y snap-mandatory text-neutral-950">
-    {projects.length ? (
-      projects.map((project) => <HomepageProjectSlide slide={project} />)
+    {slides.length ? (
+      slides.map((slide) =>
+        slide._type === "homepageGalleryPresentationSlide" ? (
+          <HomepageIntroSlide slide={slide as PresentationSlide} />
+        ) : (
+          <HomepageProjectSlide slide={slide as Project} />
+        ),
+      )
     ) : (
       <section
         class="flex min-h-dvh snap-start items-center justify-center px-6"
