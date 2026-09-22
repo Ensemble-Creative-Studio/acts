@@ -4,6 +4,7 @@ import { footerSchemaTypes } from "./footer";
 import { homepageSchemaTypes } from "./homepage";
 import { eventsSchemaTypes } from "./events";
 import { infoSchemaTypes } from "./info";
+import { navigationSchemaTypes } from "./navigation";
 import { optionType } from "./option";
 import { projectSchemaTypes } from "./project";
 import colorInput from "./objects/colorInput";
@@ -17,6 +18,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     ...homepageSchemaTypes,
     ...eventsSchemaTypes,
     ...infoSchemaTypes,
+    ...navigationSchemaTypes,
     ...projectSchemaTypes,
     colorInput,
     seoFields,

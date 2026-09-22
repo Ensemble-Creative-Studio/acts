@@ -3,9 +3,17 @@ import Logo from "../assets/logo.svg";
 
 interface Props {
   hiddenUntilHeroEnd?: boolean;
+  projectsLabel?: string;
+  eventsLabel?: string;
+  infoLabel?: string;
 }
 
-const { hiddenUntilHeroEnd = false } = Astro.props;
+const {
+  hiddenUntilHeroEnd = false,
+  projectsLabel = "Works",
+  eventsLabel = "Events",
+  infoLabel = "Info",
+} = Astro.props;
 ---
 
 <header
@@ -16,18 +24,18 @@ const { hiddenUntilHeroEnd = false } = Astro.props;
   data-hidden-until-hero-end={hiddenUntilHeroEnd ? "true" : "false"}
 >
   <div class="flex w-full items-center justify-between px-5 py-5 uppercase sm:px-6 sm:py-6 md:px-8">
-    <a href="/" class="pointer-events-auto"> 
+    <a href="/" class="pointer-events-auto">
       <Logo class="h-8 md:h-10 w-auto" />
     </a>
     <div class="flex items-center gap-4 pointer-events-auto">
       <a href="/" class="font-avant-garde md:text-xl text-lg font-bold leading-none tracking-[-1px] text-black hover:cursor-pointer">
-        Projects
+        {projectsLabel}
       </a>
     <a href="/events" class="font-avant-garde md:text-xl text-lg font-bold leading-none tracking-[-1px] text-black hover:cursor-pointer">
-      Events
+      {eventsLabel}
     </a>
     <a href="/info" class="font-avant-garde md:text-xl text-lg font-bold leading-none tracking-[-1px] text-black hover:cursor-pointer">
-      Info
+      {infoLabel}
     </a>
   </div>
   </div>

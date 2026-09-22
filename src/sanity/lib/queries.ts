@@ -120,3 +120,9 @@ export const infoQuery = `*[_type == "info" && _id == "info"][0]{
 export const footerQuery = `*[_type == "footer" && _id == "footer"][0]{
   phrase
 }`;
+
+export const navigationQuery = `*[_type == "navigation" && _id == "navigation"][0]{
+  projectsLabel,
+  eventsLabel,
+  infoLabel
+}`;

@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import PreviewBanner from "../components/PreviewBanner.astro";
+import { getNavigation } from "../sanity/lib/sanity-utils";
 import "../styles/global.css";
 
 interface Props {
@@ -20,6 +21,7 @@ const {
 } = Astro.props;
 
 const isPreview = Astro.locals.preview;
+const navigation = await getNavigation(isPreview);
 ---
 
 <!doctype html>
@@ -57,7 +59,12 @@ const isPreview = Astro.locals.preview;
 	</head>
 	<body>
 		{isPreview && <PreviewBanner />}
-		<Header hiddenUntilHeroEnd={hideHeaderUntilHeroEnd} />
+		<Header
+			hiddenUntilHeroEnd={hideHeaderUntilHeroEnd}
+			projectsLabel={navigation?.projectsLabel}
+			eventsLabel={navigation?.eventsLabel}
+			infoLabel={navigation?.infoLabel}
+		/>
 		<slot />
 	</body>
 </html>

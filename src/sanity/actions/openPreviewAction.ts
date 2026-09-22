@@ -6,6 +6,7 @@ const STATIC_PREVIEW_PATHS: Record<string, string> = {
   homepage: "/",
   events: "/events",
   info: "/info",
+  navigation: "/",
 };
 
 function resolvePreviewPath(props: DocumentActionProps): string | null {

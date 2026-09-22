@@ -5,6 +5,7 @@ import {
   eventsQuery,
   footerQuery,
   infoQuery,
+  navigationQuery,
   projectBySlugQuery,
 } from "./queries";
 
@@ -38,6 +39,15 @@ export async function getInfo(preview = false) {
 export async function getFooter(preview = false) {
   const { data } = await loadQuery<any>({
     query: footerQuery,
+    preview,
+  });
+
+  return data;
+}
+
+export async function getNavigation(preview = false) {
+  const { data } = await loadQuery<any>({
+    query: navigationQuery,
     preview,
   });
 
