@@ -14,11 +14,23 @@ const { slide } = Astro.props;
 const formatCredit = (credit: ProjectCredit) =>
   [credit.jobs, credit.name].filter(Boolean).join(" ");
 
-const getImageData = (image?: ImageAsset) => ({
-  src: image?.asset?.url,
-  width: image?.asset?.metadata?.dimensions?.width ?? 1600,
-  height: image?.asset?.metadata?.dimensions?.height ?? 2000,
-});
+// Client uploads can come in at their raw camera/export resolution (we've
+// seen uploads past 9000px wide). Nothing on this page ever displays an
+// image larger than the viewport, so cap the source we ask Astro to
+// generate instead of shipping the original pixels straight to the browser.
+const MAX_IMAGE_DIMENSION = 2400;
+
+const getImageData = (image?: ImageAsset) => {
+  const rawWidth = image?.asset?.metadata?.dimensions?.width ?? 1600;
+  const rawHeight = image?.asset?.metadata?.dimensions?.height ?? 2000;
+  const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(rawWidth, rawHeight));
+
+  return {
+    src: image?.asset?.url,
+    width: Math.round(rawWidth * scale),
+    height: Math.round(rawHeight * scale),
+  };
+};
 
 const getMuxPosterUrl = (playbackId?: string) =>
   playbackId ? `https://image.mux.com/${playbackId}/thumbnail.webp?time=0` : undefined;
